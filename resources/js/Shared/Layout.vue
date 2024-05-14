@@ -1,5 +1,5 @@
 <template>
-    <h1>hola</h1>
+    <h1>header</h1>
 </template>
 
 <script setup>

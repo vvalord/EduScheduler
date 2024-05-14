@@ -1,6 +1,8 @@
 import { createApp, h } from 'vue'
 import {createInertiaApp, Link} from '@inertiajs/vue3'
 import Layout from "./Shared/Layout.vue";
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
 
 createInertiaApp({
     resolve: name => {
@@ -14,6 +16,7 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
         createApp({ render: () => h(App, props) })
             .use(plugin)
+            .use(ElementPlus)
             .component('Link', Link)
             .mount(el)
     },
