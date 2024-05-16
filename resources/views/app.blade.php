@@ -7,6 +7,5 @@
 </head>
 <body>
 @inertia
-<h1>q</h1>
 </body>
 </html>
