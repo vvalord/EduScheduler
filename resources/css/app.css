@@ -1,0 +1,53 @@
+:root {
+    --header-background: green;
+    --header-link-background-active: darkgreen;
+    --header-link-text-color: black;
+    --header-link-text-color-hover: blue;
+}
+
+html, body{
+    margin: 0;
+}
+
+nav {
+    width: 100%;
+    height: 5rem;
+    align-content: center;
+}
+
+.menu {
+    display: flex;
+    align-content: center;
+    width: 100%;
+    background-color: var(--header-background);
+}
+.menu__list {
+    padding: 0;
+    display: flex;
+    list-style-type: none;
+    height: 100%;
+}
+.menu__list__item {
+    flex: 1;
+    display: flex;
+    border: solid 1px;
+}
+.menu__list__item--active {
+    background-color: var(--header-link-background-active);
+}
+
+.menu__list__item__link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    height: 100%;
+    width: 100%;
+    color: var(--header-link-text-color);
+    font-size: large;
+    font-weight: bold;
+    &:hover {
+        text-decoration: underline;
+        color: var(--header-link-text-color-hover);
+    }
+}
