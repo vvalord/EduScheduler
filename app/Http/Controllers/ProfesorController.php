@@ -23,7 +23,7 @@ class ProfesorController extends Controller
     }
 
     public function search(int $page){
-        $offset=10*$page;
+        $offset = 10*$page;
 
         //Hecho asi y no como consulta preparada por que supuestamente en limit y offset no funcionan las variables preparadas
         //Probar como preparada antes de dejarla como definitiva ':offset'
