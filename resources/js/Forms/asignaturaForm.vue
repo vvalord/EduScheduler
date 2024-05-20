@@ -2,6 +2,18 @@
 <script setup>
 import { ref } from 'vue'
 
+let name;
+let horas;
+let cod;
+if(!data){
+    name="";
+    cod="";
+    horas=0;
+}else{
+    name=data.nombre;
+    cod=data.cod;
+    horas=data.horas;
+}
 //Insert:
 //Al enviar, enviar el request a la api y guardar la asignatura, deberia devolver a la lista de asignaturas
 //Update:
@@ -14,10 +26,13 @@ import { ref } from 'vue'
     <form @submit.prevent=""> 
         <div>
             <label for="nombre">Nombre:</label>
-            <input type="text" name="nombre" id="nombre" maxlength="20">
+            <input type="text" v-model="name" name="nombre" id="nombre" maxlength="20">
+
+            <label for="cod">Codigo:</label>
+            <input type="text" v-model="cod" name="cod" id="cod" maxlength="5">
 
             <label for="horas">Horas:</label>
-            <input type="number" name="horas" id="horas" max="18" min="0" value=0>
+            <input type="number" v-model="horas" name="horas" id="horas" max="18" min="0">
         </div>  
             <input type="submit" value="Send"/>
     </form>

@@ -2,6 +2,16 @@
 <script setup>
 import { ref } from 'vue'
 
+let name;
+let cod;
+
+if(!data){
+    name="";
+    cod="";
+}else{
+    name=data.nombre;
+    cod=data.cod;
+}
 //Asignaturas:
 //Obtener un listado de todas las asignaturas disponibles de la api y guardarlo en una variable tipo lista
 //Al pulsar el boton de añadir, mostrar un dialog/lista donde se escoja la asignatura a añadir de la variable
@@ -15,12 +25,17 @@ import { ref } from 'vue'
 //Update:
 //Falta indicar que si se obtiene un id, haga una busqueda del curso y muestra los datos en sus respectivos inputs
 //Al enviar, enviar el request a la api y actualizar el curso, deberia devolver a la lista de cursos
+function call(){
+    console.log(name);
+}
 </script>
 <template>
-    <form @submit.prevent=""> 
+    <form @submit.prevent="call"> 
         <div>
             <label for="nombre">Nombre:</label>
-            <input type="text" name="nombre" id="nombre" maxlength="50">    
+            <input type="text" v-model="name" name="nombre" id="nombre" maxlength="50">
+            <label for="cod">Codigo:</label>
+            <input type="text" v-model="cod" name="cod" id="cod" maxlength="5"> 
         </div>
         <div>
             <input type="button" value="Añadir asignatura" @click="">
