@@ -22,16 +22,18 @@ class ProfesorController extends Controller
         return redirect('/profesores');
     }
 
-    public function search(int $page){
-        $offset = 10*$page;
+    public function searchAll(){
 
         //Hecho asi y no como consulta preparada por que supuestamente en limit y offset no funcionan las variables preparadas
         //Probar como preparada antes de dejarla como definitiva ':offset'
-        $profesores=DB::select("SELECT * FROM profesores limit 10 OFFSET $offset;");
+        $profesores=DB::select("SELECT * FROM profesores;");
         return $profesores;
     }
-    public function searchByName(int $page,?string $name){
-        $offset=10*$page;
+    public function search(?int $page,?string $name){
+        if($page==null){
+            $page=1;
+        }
+        $offset=10*($page-1);
         if($name==null){
             $name="";
         }
@@ -51,7 +53,7 @@ class ProfesorController extends Controller
             'cod' => ['required','min:3','max:5']
         ]);
         $profesor=ProfesorController::searchById($id);
-        if($datos['nombre']!=$profesor['name']){
+        if($datos['nombre']!=$profesor['nombre']){
             DB::update(
                 'update profesores set nombre = ? where id = ?',
                 [$datos['nombre'],$id]
