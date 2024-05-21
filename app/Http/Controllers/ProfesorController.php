@@ -30,12 +30,14 @@ class ProfesorController extends Controller
         $profesores=DB::select("SELECT * FROM profesores limit 10 OFFSET $offset;");
         return $profesores;
     }
-    public function searchByName(int $page,string $name){
+    public function searchByName(int $page,?string $name){
         $offset=10*$page;
-
+        if($name==null){
+            $name="";
+        }
         //Hecho asi y no como consulta preparada por que supuestamente en limit y offset no funcionan las variables preparadas
         //Probar como preparada antes de dejarla como definitiva ':offset'
-        $profesores=DB::select("SELECT * FROM profesores where nombre like '%?%' limit 10 OFFSET $offset;",[1, $offset]);
+        $profesores=DB::select("SELECT * FROM profesores where nombre like '%?%' limit 10 OFFSET $offset;",[1, $name]);
         return $profesores;
     }
     public function searchById(int $id){
