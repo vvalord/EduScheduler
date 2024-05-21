@@ -21,4 +21,9 @@ class Asignatura extends Model
     {
         return $this->belongsToMany(Curso::class, 'curso_profesor_asignatura');
     }
+
+    public function asignaturasCursos()
+    {
+        return $this->hasMany(Curso_Profesor_Asignatura::class);
+    }
 }
