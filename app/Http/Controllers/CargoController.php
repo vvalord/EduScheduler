@@ -15,8 +15,14 @@ class CargoController extends Controller
             'horas' => ['required', 'min:0','max:18', 'integer']
         ]);
 
-        $cargo = Cargo::create($datos);
-
+        try {
+            Cargo::create($datos);
+        } catch (\Illuminate\Database\QueryException $exception) {
+            // You can check get the details of the error using `errorInfo`:
+            $errorInfo = $exception->errorInfo;
+        
+            // Return the response to the client..
+        }
         return redirect('/cargos');
     }
 
