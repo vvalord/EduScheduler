@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use App\Models\Cargo;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
 
 class CargoController extends Controller
@@ -47,17 +48,21 @@ class CargoController extends Controller
         //Probar como preparada antes de dejarla como definitiva ':offset'
         $cargos=DB::select("SELECT * FROM cargos where nombre like '%?%' limit 10 OFFSET $offset;",[1, $name]);
         return $cargos;*/
-        $cargos=Cargo::query()
-        ->when(Request::input('search'),function ($query,$search){
-            $query->where('nombre','like',"%{$search}%");
-        })
-        ->paginate(10)
-        ->withQueryString()
-        ->through(fn($cargo)=>[
-            'id'=>$cargo->id,
-            'nombre'=>$cargo->nombre
+        return Inertia::render('Cargos',[
+            'cargos'=>Cargo::query()
+            ->when(Request::input('search'),function ($query,$search){
+                $query->where('nombre','like',"%{$search}%");
+            })
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn($cargo)=>[
+                'id'=>$cargo->id,
+                'nombre'=>$cargo->nombre
+            ]),
+            //Para el input de busqueda
+            'filters'=>Request::only(['search'])
         ]);
-        return $cargos;
+        
     }
     public static function searchById(int $id){
         //$cargo=DB::select("SELECT * FROM cargos where id=?",[1, $id]);
