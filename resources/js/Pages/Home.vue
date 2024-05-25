@@ -2,8 +2,6 @@
     <h1>
         Home
     </h1>
-    <p v-text="test"></p>
-    <Table :data="profesores"/>
 </template>
 
 <script setup>
