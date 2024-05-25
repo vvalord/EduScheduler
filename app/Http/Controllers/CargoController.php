@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 class CargoController extends Controller
 {
     //Si ves esto, ignora este controller
-    public static function insert()
+    public function insert()
     {
         $datos = request()->validate([
             'horas' => ['required', 'min:0','max:18', 'integer']
@@ -23,7 +23,7 @@ class CargoController extends Controller
         } catch (\Illuminate\Database\QueryException $exception) {
             // You can check get the details of the error using `errorInfo`:
             $errorInfo = $exception->errorInfo;
-        
+
             // Return the response to the client..
         }
         return redirect('/cargos');
@@ -36,7 +36,7 @@ class CargoController extends Controller
         ]);
         return $cargos;
     }
-    public static function search(){
+    public function search(){
         /*if($page==null){
             $page=1;
         }
@@ -48,29 +48,17 @@ class CargoController extends Controller
         //Probar como preparada antes de dejarla como definitiva ':offset'
         $cargos=DB::select("SELECT * FROM cargos where nombre like '%?%' limit 10 OFFSET $offset;",[1, $name]);
         return $cargos;*/
-        return Inertia::render('Cargos',[
-            'cargos'=>Cargo::query()
-            ->when(Request::input('search'),function ($query,$search){
-                $query->where('nombre','like',"%{$search}%");
-            })
-            ->paginate(10)
-            ->withQueryString()
-            ->through(fn($cargo)=>[
-                'id'=>$cargo->id,
-                'nombre'=>$cargo->nombre
-            ]),
-            //Para el input de busqueda
-            'filters'=>Request::only(['search'])
-        ]);
-        
+        $cargos = Cargo::all();
+        return Inertia::render('Cargos');
+
     }
-    public static function searchById(int $id){
+    public function searchById(int $id){
         //$cargo=DB::select("SELECT * FROM cargos where id=?",[1, $id]);
         $cargo=Cargo::query()->find($id);
         return $cargo;
     }
 
-    public static function update(int $id){
+    public function update(int $id){
         $datos = request()->validate([
             'horas' => ['required', 'min:0','max:18', 'integer']
         ]);
@@ -102,7 +90,7 @@ class CargoController extends Controller
         return redirect('/cargos');
 
     }
-    public static function delete(int $id){
+    public function delete(int $id){
         //$deleted = DB::delete('delete from cargos where id=?',[1, $id]);
         Cargo::query()->where('id',$id)->delete();
         return redirect('/cargos');
