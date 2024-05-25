@@ -25,7 +25,7 @@ Route::get('/cursos', function () {
 Route::get('/cargos', [CargoController::class,'search']);
 
 //Enviar datos from Cargo
-Route::post('/cargos/create',[CargoController::class,'insert']);
+Route::post('/cargos',[CargoController::class,'insert']);
 
 //Update form
 //Aqui hago el inertia aqui y no en el controller, porque uso el controller en otras funciones

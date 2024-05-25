@@ -37,6 +37,18 @@ if(!data){
     cargo=data.cargo;
 }
 
+let horas;
+let horario;
+
+if(!data){
+    name="";
+    horas=0;
+    horario="dia";
+}else{
+    name=data.nombre;
+    horas=data.horas;
+    horario=data.turno;
+}
 //Cargos:
 //Obtener un listado de los cargos de la api, para mostrar los valores en el select de cargos
 //Insert:
@@ -73,11 +85,22 @@ function call(){
                 <option v-for="departamento in departamentos" :value="departamento.value">{{ departamento.title }}</option>
             </select>
             <label for="cargo">Cargo:</label>
+
+            <!--Cargos-->
             <select name="cargo" v-model="cargo">
                 <option value="value1">Cargo 1</option>
                 <option value="value2">Cargo 2</option>
                 <option value="value3">Cargo 3</option>
             </select>
+            <label for="horas">Horas:</label>
+            <input type="number" v-model="horas" name="horas" id="horas" max="18" min="0" value=0>
+            
+            <label for="horas">Horario</label>
+            <select name="horario" v-model="horario">
+                <option value="dia"> Diurno</option>
+                <option value="noche"> Nocturno</option>
+            </select>
+
         </div>
             <input type="submit" value="Send"/>
     </form>
