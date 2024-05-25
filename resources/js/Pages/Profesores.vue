@@ -1,11 +1,10 @@
-<script setup>
-
-</script>
-
 <template>
-
+    <Table :data="profesores"/>
 </template>
 
-<style scoped>
-
-</style>
+<script setup>
+import Table from "../Shared/DataTable.vue"
+const props = defineProps({
+    profesores: Object
+})
+</script>

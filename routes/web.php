@@ -1,7 +1,9 @@
 <?php
 
+
 use App\Http\Controllers\CargoController;
 use Illuminate\Http\Request;
+use App\Models\Profesor;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -10,7 +12,11 @@ Route::get('/', function () {
 });
 
 Route::get('/profesores', function () {
-    return Inertia::render('Profesores');
+    $ret = Profesor::all();
+    //dd($ret);
+    return Inertia::render('Profesores', [
+        'profesores' => $ret
+    ]);
 });
 
 Route::get('/asignaturas', function () {
