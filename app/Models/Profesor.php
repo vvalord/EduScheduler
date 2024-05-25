@@ -8,12 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Profesor extends Model
 {
     use HasFactory;
-
+    protected $table = 'profesores';
     protected $guarded=[];
 
     public function asignacion()
     {
-        return $this->hasMany(Asignacion_Cargo::class);
+        return $this->belongsToMany(Cargo::class, 'asignacion_cargos');
     }
 
     public function asignaturas()
@@ -24,5 +24,10 @@ class Profesor extends Model
     public function cursos()
     {
         return $this->belongsToMany(Curso::class, 'curso_profesor_asignatura');
+    }
+
+    public function asignaturasCursos()
+    {
+        return $this->hasMany(Curso_Profesor_Asignatura::class);
     }
 }

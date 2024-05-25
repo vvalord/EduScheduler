@@ -9,6 +9,7 @@ class Asignatura extends Model
 {
     use HasFactory;
 
+    protected $table = 'asignaturas';
     protected $guarded = [];
 
     public function profesores()
@@ -19,5 +20,10 @@ class Asignatura extends Model
     public function cursos()
     {
         return $this->belongsToMany(Curso::class, 'curso_profesor_asignatura');
+    }
+
+    public function asignaturasCursos()
+    {
+        return $this->hasMany(Curso_Profesor_Asignatura::class);
     }
 }

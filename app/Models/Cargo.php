@@ -13,6 +13,6 @@ class Cargo extends Model
 
     public function asignacion()
     {
-        return $this->hasMany(Asignacion_Cargo::class);
+        return $this->belongsToMany(Profesor::class, 'asignacion_cargos');
     }
 }
