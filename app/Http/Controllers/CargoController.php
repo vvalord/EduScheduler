@@ -15,7 +15,7 @@ class CargoController extends Controller
     public function insert()
     {
         $datos = request()->validate([
-            'horas' => ['required', 'min:0','max:18', 'integer']
+            'nombre' => ['required']
         ]);
 
         try {
@@ -25,6 +25,7 @@ class CargoController extends Controller
             $errorInfo = $exception->errorInfo;
 
             // Return the response to the client..
+            echo $errorInfo;
         }
         return redirect('/cargos');
     }
@@ -49,7 +50,14 @@ class CargoController extends Controller
         $cargos=DB::select("SELECT * FROM cargos where nombre like '%?%' limit 10 OFFSET $offset;",[1, $name]);
         return $cargos;*/
         $cargos = Cargo::all();
-        return Inertia::render('Cargos');
+        $ret=[];
+        foreach($cargos as $cargo){
+            $ret[]=['nombre'=>$cargo['nombre']];
+        }
+        return Inertia::render('Cargos',[
+            //Obtener los dato del cargo para introudcirlo en el input
+            'cargos'=>$ret
+        ]);
 
     }
     public function searchById(int $id){
