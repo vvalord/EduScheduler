@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use App\Models\Profesor;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class ProfesorController extends Controller
 {
@@ -12,12 +14,23 @@ class ProfesorController extends Controller
     public function insert()
     {
         $datos = request()->validate([
+            'nombre' => ['required'],
             'email' => ['required', 'min:5','max:50', 'email', Rule::unique('profesores', 'email')],
-            'cod' => ['required','min:3','max:5', Rule::unique('profesores', 'cod')]
+            'cod' => ['required','min:3','max:5', Rule::unique('profesores', 'cod')],
+            'especialidad' => ['required'],
+            'departamento' => ['required']
         ]);
         $datos['total_horas']=0;
 
-        $user = Profesor::create($datos);
+        try {
+             Profesor::create($datos);
+        } catch (\Illuminate\Database\QueryException $exception) {
+            // You can check get the details of the error using `errorInfo`:
+            $errorInfo = $exception->errorInfo;
+
+            // Return the response to the client..
+            echo $errorInfo;
+        }
 
         return redirect('/profesores');
     }
@@ -29,18 +42,16 @@ class ProfesorController extends Controller
         $profesores=DB::select("SELECT * FROM profesores;");
         return $profesores;
     }
-    public function search(?int $page,?string $name){
-        if($page==null){
-            $page=1;
+    public function search(){
+        $profesores = Profesor::all();
+        $ret=[];
+        foreach($profesores as $profesor){
+            $ret[]=['id'=>$profesor['id'],'nombre'=>$profesor['nombre'],'cod'=>$profesor['cod'],'email'=>$profesor['email'],'especialidad'=>$profesor['especialidad'],'departamento'=>$profesor['departamento'],'total_horas'=>$profesor['total_horas']];
         }
-        $offset=10*($page-1);
-        if($name==null){
-            $name="";
-        }
-        //Hecho asi y no como consulta preparada por que supuestamente en limit y offset no funcionan las variables preparadas
-        //Probar como preparada antes de dejarla como definitiva ':offset'
-        $profesores=DB::select("SELECT * FROM profesores where nombre like '%?%' limit 10 OFFSET $offset;",[1, $name]);
-        return $profesores;
+        return Inertia::render('Profesores',[
+            //Obtener los dato del cargo para introudcirlo en el input
+            'profesores'=>$ret
+        ]);
     }
     public function searchById(int $id){
         $profesor=DB::select("SELECT * FROM profesores where id=?",[1, $id]);
@@ -86,7 +97,8 @@ class ProfesorController extends Controller
         return redirect('/profesores');
     }
     public function delete(int $id){
-        $deleted = DB::delete('delete from profesores where id=?',[1, $id]);
+        $cargo = Profesor::find($id);
+        $cargo->delete();
         return redirect('/profesores');
     }
 

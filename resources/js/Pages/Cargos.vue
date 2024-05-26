@@ -1,11 +1,12 @@
-<script setup>
-
-</script>
-
 <template>
-
+    <Table :data="cargos" :route="name"/>
 </template>
 
-<style scoped>
+<script setup>
+import Table from "../Shared/DataTable.vue"
 
-</style>
+const props = defineProps({
+    cargos: Object
+})
+const name = '/cargos';
+</script>

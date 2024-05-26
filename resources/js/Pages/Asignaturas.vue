@@ -1,11 +1,11 @@
-<script setup>
-
-</script>
-
 <template>
-
+    <Table :data="asignaturas" :route="name"/>
 </template>
 
-<style scoped>
-
-</style>
+<script setup>
+import Table from "../Shared/DataTable.vue"
+const props = defineProps({
+    asignaturas: Object
+})
+const name = '/asignaturas';
+</script>

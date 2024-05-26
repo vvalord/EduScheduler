@@ -1,0 +1,88 @@
+<template>
+    <teleport to="body">
+        <div v-if="isVisible" class="dialog-overlay">
+            <div class="dialog">
+                <h2>{{$page.component}}</h2>
+                <form @submit.prevent="submit" method="POST">
+                    <div class="dialog-form">
+                        <div v-if="data.nombre">
+                            <label for="nombre">Nombre:</label>
+                            <el-input type="text" v-model="form.nombre" name="nombre" id="nombre" maxlength="30"/>
+                        </div>
+                        <div v-if="data.cod">
+                            <label for="nombre">Clave:</label>
+                            <el-input type="text" v-model="form.cod" name="cod" id="cod" maxlength="30"/>
+                        </div>
+                        <div v-if="data.email">
+                            <label for="nombre">Email:</label>
+                            <el-input type="text" v-model="form.email" name="email" id="email" maxlength="30"/>
+                        </div>
+                    </div>
+                    <el-button type="primary" value="Send">Añadir</el-button>
+                </form>
+                <footer class="dialog-footer">
+                    <slot name="footer">
+                        <button>Cerrar</button>
+                    </slot>
+                </footer>
+            </div>
+        </div>
+    </teleport>
+</template>
+
+<script setup>
+import {ref} from 'vue'
+import {router} from "@inertiajs/vue3";
+
+
+const form = ref({})
+
+let submit = () => {
+    router.post('/cargos', form);
+
+}
+</script>
+
+<style scoped>
+.dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.dialog {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dialog-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.dialog-footer {
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+    text-align: right;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+</style>
