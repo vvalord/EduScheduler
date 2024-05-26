@@ -13,9 +13,7 @@
                 <el-input v-model="search" size="small" placeholder="Type to search" />
             </template>
             <template #default="scope">
-                <el-button size="small" @click="handleEdit(scope.$index, scope.row)">
-                    Edit
-                </el-button>
+                <el-button @click="handleEdit(scope.row)"  size="small">Editar</el-button>
                 <el-button
                     size="small"
                     type="danger"
@@ -26,15 +24,25 @@
             </template>
         </el-table-column>
     </el-table>
+    <Form :isVisible="showDialog" :data="row" @submit="submit">
+        <template #footer>
+            <button @click="showDialog = false">Cerrar</button>
+        </template>
+    </Form>
 </template>
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
+import Form from "../Forms/EditForm.vue"
+import {router} from "@inertiajs/vue3";
 
 const props = defineProps({
-    data: Object
+    data: Object,
+    route: String
 })
 
+let row = ref({})
+let showDialog = ref(false);
 const search = ref('')
 const filterTableData = computed(() =>
     props.data.filter(
@@ -44,11 +52,16 @@ const filterTableData = computed(() =>
             data.cod.toLowerCase().includes(search.value.toLowerCase())
     )
 )
-const handleEdit = (index: number, row) => {
-    console.log(index, row)
+const handleEdit = (ScopeRow) => {
+    row = ScopeRow;
+    showDialog.value = true;
 }
 const handleDelete = (index: number, row) => {
-    console.log(index, row)
+    console.log(index, row, props.route)
+}
+
+const submit = (form) => {
+    router.put(props.route, form)
 }
 
 </script>
