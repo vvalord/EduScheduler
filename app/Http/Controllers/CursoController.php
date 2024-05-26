@@ -39,7 +39,7 @@ class CursoController extends Controller
         $cursos = Curso::all();
         $ret=[];
         foreach($cursos as $curso){
-            $ret[]=['nombre'=>$curso['nombre'],'cod'=>$curso['cod']];
+            $ret[]=['id'=>$curso['id'],'nombre'=>$curso['nombre'],'cod'=>$curso['cod']];
         }
         return Inertia::render('Cursos',[
             //Obtener los dato del cargo para introudcirlo en el input
@@ -71,7 +71,8 @@ class CursoController extends Controller
         return redirect('/cursos');
     }
     public function delete(int $id){
-        $deleted = DB::delete('delete from cursos where id=?',[1, $id]);
+        $cargo = Curso::find($id);
+        $cargo->delete();
         return redirect('/cursos');
     }
 

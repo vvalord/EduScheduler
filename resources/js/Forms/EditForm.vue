@@ -10,12 +10,24 @@
                             <el-input type="text" v-model="form.nombre" name="nombre" id="nombre" maxlength="30"/>
                         </div>
                         <div v-if="data.cod">
-                            <label for="nombre">Clave:</label>
+                            <label for="cod">Clave:</label>
                             <el-input type="text" v-model="form.cod" name="cod" id="cod" maxlength="30"/>
                         </div>
                         <div v-if="data.email">
-                            <label for="nombre">Email:</label>
+                            <label for="email">Email:</label>
                             <el-input type="text" v-model="form.email" name="email" id="email" maxlength="30"/>
+                        </div>
+                        <div v-if="data.especialidad">
+                            <label for="especialidad">Especialidad:</label>
+                            <el-input type="text" v-model="form.especialidad" name="especialidad" id="especialidad" maxlength="30"/>
+                        </div>
+                        <div v-if="data.departamento">
+                            <label for="departamento">Departamento:</label>
+                            <el-input type="text" v-model="form.departamento" name="departamento" id="departamento" maxlength="30"/>
+                        </div>
+                        <div v-if="data.horas">
+                            <label for="horas">Total de horas:</label>
+                            <el-input type="number" v-model="form.horas" name="horas" id="horas" maxlength="30"/>
                         </div>
                     </div>
                     <el-button type="primary" @click="$emit('submit', form)">Añadir</el-button>

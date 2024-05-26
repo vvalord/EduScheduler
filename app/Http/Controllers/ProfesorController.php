@@ -46,7 +46,7 @@ class ProfesorController extends Controller
         $profesores = Profesor::all();
         $ret=[];
         foreach($profesores as $profesor){
-            $ret[]=['nombre'=>$profesor['nombre'],'cod'=>$profesor['cod'],'email'=>$profesor['email'],'especialidad'=>$profesor['especialidad'],'departamento'=>$profesor['departamento'],'total_horas'=>$profesor['total_horas']];
+            $ret[]=['id'=>$profesor['id'],'nombre'=>$profesor['nombre'],'cod'=>$profesor['cod'],'email'=>$profesor['email'],'especialidad'=>$profesor['especialidad'],'departamento'=>$profesor['departamento'],'total_horas'=>$profesor['total_horas']];
         }
         return Inertia::render('Profesores',[
             //Obtener los dato del cargo para introudcirlo en el input
@@ -97,7 +97,8 @@ class ProfesorController extends Controller
         return redirect('/profesores');
     }
     public function delete(int $id){
-        $deleted = DB::delete('delete from profesores where id=?',[1, $id]);
+        $cargo = Profesor::find($id);
+        $cargo->delete();
         return redirect('/profesores');
     }
 

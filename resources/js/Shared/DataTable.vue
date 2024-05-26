@@ -7,7 +7,7 @@
         <el-table-column v-if="props.data[0].email" label="Email" prop="email" />
         <el-table-column v-if="props.data[0].especialidad" label="Especialidad" prop="especialidad" />
         <el-table-column v-if="props.data[0].departamento" label="Departamento" prop="departamento" />
-        <el-table-column v-if="props.data[0].horas" label="Horas" prop="total_horas" />
+        <el-table-column v-if="props.data[0].horas" label="Horas" prop="horas" />
         <el-table-column align="right">
             <template #header>
                 <el-input v-model="search" size="small" placeholder="Type to search" />
@@ -17,7 +17,7 @@
                 <el-button
                     size="small"
                     type="danger"
-                    @click="handleDelete(scope.$index, scope.row)"
+                    @click="handleDelete(scope.row)"
                 >
                     Delete
                 </el-button>
@@ -56,12 +56,17 @@ const handleEdit = (ScopeRow) => {
     row = ScopeRow;
     showDialog.value = true;
 }
-const handleDelete = (index: number, row) => {
-    console.log(index, row, props.route)
+const handleDelete = (row) => {
+    console.log(`${props.route}/${row.id}`)
+    router.delete(`${props.route}/${row.id}`, {
+        preserveState: "errors"
+    })
 }
 
 const submit = (form) => {
-    router.put(props.route, form)
+    router.post(props.route, form, {
+        preserveState: "errors"
+    })
 }
 
 </script>

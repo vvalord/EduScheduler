@@ -46,7 +46,7 @@ Route::post('/cargos',[CargoController::class,'insert']);
 
 //Update form
 //Aqui hago el inertia aqui y no en el controller, porque uso el controller en otras funciones
-Route::get('/cargo/{id}',function(){
+Route::get('/cargo/{id}',function($id){
     return Inertia::render('CargosForm',[
         //Obtener los dato del cargo para introudcirlo en el input
         'cargo'=>CargoController::searchById($id)
@@ -57,4 +57,9 @@ Route::get('/cargo/{id}',function(){
 Route::put('/cargo/{id}',[CargoController::class,'update']);
 
 //Delete Cargo
-Route::delete('/cargo/{id}',[CargoController::class,'delete']);
+Route::delete('/cargos/{id}',[CargoController::class,'delete']);
+
+Route::delete('/profesores/{id}',[ProfesorController::class,'delete']);
+Route::delete('/asignaturas/{id}',[AsignaturaController::class,'delete']);
+Route::delete('/cursos/{id}',[CursoController::class,'delete']);
+

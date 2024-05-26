@@ -42,7 +42,7 @@ class AsignaturaController extends Controller
         $asignaturas = Asignatura::all();
         $ret=[];
         foreach($asignaturas as $asignatura){
-            $ret[]=['nombre'=>$asignatura['nombre'],'cod'=>$asignatura['cod'],'horas'=>$asignatura['horas']];
+            $ret[]=['id'=>$asignatura['id'],'nombre'=>$asignatura['nombre'],'cod'=>$asignatura['cod'],'horas'=>$asignatura['horas']];
         }
         return Inertia::render('Asignaturas',[
             //Obtener los dato del cargo para introudcirlo en el input
@@ -80,7 +80,8 @@ class AsignaturaController extends Controller
         return redirect('/asignaturas');
     }
     public function delete(int $id){
-        $deleted = DB::delete('delete from asignaturas where id=?',[1, $id]);
+        $asignatura = Asignatura::find($id);
+        $asignatura->delete();
         return redirect('/asignaturas');
     }
 

@@ -52,7 +52,10 @@ class CargoController extends Controller
         $cargos = Cargo::all();
         $ret=[];
         foreach($cargos as $cargo){
-            $ret[]=['nombre'=>$cargo['nombre']];
+            $ret[]=[
+                'id' => $cargo['id'],
+                'nombre'=>$cargo['nombre']
+            ];
         }
         return Inertia::render('Cargos',[
             //Obtener los dato del cargo para introudcirlo en el input
@@ -100,7 +103,9 @@ class CargoController extends Controller
     }
     public function delete(int $id){
         //$deleted = DB::delete('delete from cargos where id=?',[1, $id]);
-        Cargo::query()->where('id',$id)->delete();
+        //Cargo::query()->where('id',$id)->delete();
+        $cargo = Cargo::find($id);
+        $cargo->delete();
         return redirect('/cargos');
     }
 
