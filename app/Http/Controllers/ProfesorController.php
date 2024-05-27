@@ -10,18 +10,26 @@ use Inertia\Inertia;
 
 class ProfesorController extends Controller
 {
-    //Si ves esto, ignora este controller
+    /**
+     * Insert
+     *
+     * Takes the data sent from the form and create a new teacher
+     * 
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function insert()
     {
+        //We validate the data
         $datos = request()->validate([
             'nombre' => ['required'],
             'email' => ['required', 'min:5','max:50', 'email', Rule::unique('profesores', 'email')],
-            'cod' => ['required','min:3','max:5', Rule::unique('profesores', 'cod')],
+            'cod' => ['required','max:5', Rule::unique('profesores', 'cod')],
             'especialidad' => ['required'],
             'departamento' => ['required']
         ]);
         $datos['total_horas']=0;
 
+        //With the validated data, we try to create the new teacher
         try {
              Profesor::create($datos);
         } catch (\Illuminate\Database\QueryException $exception) {
@@ -35,35 +43,53 @@ class ProfesorController extends Controller
         return redirect('/profesores');
     }
 
+    /*
     public function searchAll(){
 
         //Hecho asi y no como consulta preparada por que supuestamente en limit y offset no funcionan las variables preparadas
         //Probar como preparada antes de dejarla como definitiva ':offset'
         $profesores=DB::select("SELECT * FROM profesores;");
         return $profesores;
-    }
+    }*/
+
+    /**
+     * Search
+     *
+     * Sends the list of teachers found in the database
+     * 
+     * @return \Inertia\Response List of teachers
+     */
     public function search(){
+        //Obtain all the teachers
         $profesores = Profesor::all();
         $ret=[];
+        //Return only what's important
         foreach($profesores as $profesor){
             $ret[]=['id'=>$profesor['id'],'nombre'=>$profesor['nombre'],'cod'=>$profesor['cod'],'email'=>$profesor['email'],'especialidad'=>$profesor['especialidad'],'departamento'=>$profesor['departamento'],'total_horas'=>$profesor['total_horas']];
         }
         return Inertia::render('Profesores',[
-            //Obtener los dato del cargo para introudcirlo en el input
             'profesores'=>$ret
         ]);
     }
+    /*
     public function searchById(int $id){
         $profesor=DB::select("SELECT * FROM profesores where id=?",[1, $id]);
         return $profesor;
-    }
+    }*/
 
-    public function update(int $id){
+    /**
+     * Update
+     *
+     * Takes the data sent from the form and updates a teacher
+     * 
+     * @param  mixed $id
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */public function update(int $id){
         $datos = request()->validate([
             'email' => ['required', 'min:5','max:50', 'email'],
             'cod' => ['required','min:3','max:5']
         ]);
-        $profesor=ProfesorController::searchById($id);
+        $profesor=Profesor::find($id);
         if($datos['nombre']!=$profesor['nombre']){
             DB::update(
                 'update profesores set nombre = ? where id = ?',
@@ -96,9 +122,25 @@ class ProfesorController extends Controller
         }
         return redirect('/profesores');
     }
+
+    /**
+     * Delete
+     * 
+     * Delete a teacher
+     *
+     * @param  mixed $id
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function delete(int $id){
-        $cargo = Profesor::find($id);
-        $cargo->delete();
+        try{
+            Profesor::find($id)->delete();
+        } catch (\Illuminate\Database\QueryException $exception) {
+            // You can check get the details of the error using `errorInfo`:
+            $errorInfo = $exception->errorInfo;
+
+            // Return the response to the client..
+            echo $errorInfo;
+        }
         return redirect('/profesores');
     }
 
