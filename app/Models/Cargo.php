@@ -15,4 +15,14 @@ class Cargo extends Model
     {
         return $this->belongsToMany(Profesor::class, 'asignacion_cargos');
     }
+
+    public static function equals(Cargo $cargo1, Cargo $cargo2){
+        $equal=true;
+
+        if($cargo1->nombre!=$cargo2->nombre)
+            $equal=false;
+
+        return $equal;
+
+    }
 }

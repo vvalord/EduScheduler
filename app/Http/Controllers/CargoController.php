@@ -98,33 +98,42 @@ class CargoController extends Controller
      */
     public function update(int $id){
         $datos = request()->validate([
-            'horas' => ['required', 'min:0','max:18', 'integer']
+            'nombre' => ['required']
         ]);
+
         $cargo=Cargo::find($id);
+        //Primer metodo
+        /*
         if($datos['nombre']!=$cargo->nombre||$datos['horario']!=$cargo->horario||$datos['horas']!=$cargo->horas){
         if($datos['nombre']!=$cargo->nombre){
             $cargo->nombre=$datos['nombre'];
-            /*DB::update(
-                'update cargos set nombre = ? where id = ?',
-                [$datos['nombre'],$id]
-            );*/
         }
         if($datos['horas']!=$cargo->horas){
             $cargo->horas=$datos['horas'];
-            /*DB::update(
-                'update cargos set horas = ? where id = ?',
-                [$datos['horas'],$id]
-            );*/
         }
         if($datos['horario']!=$cargo->horario){
             $cargo->horario=$datos['horario'];
-            /*DB::update(
-                'update cargos set horario = ? where id = ?',
-                [$datos['horario'],$id]
-            );*/
         }
         $cargo->save();
-    }
+        */
+
+        //Segundo metodo
+        //Creamos una instancia que no se guarda en la base de datos
+        $newCargo=Cargo::make($datos);
+        //Comprobamos si sus atributos son los mismos
+        if(Cargo::equals($newCargo,$cargo)){
+            dd("Los datos son iguales");
+        }else{
+            try{
+                Cargo::find($id)->update($datos);
+            } catch (\Illuminate\Database\QueryException $exception) {
+                // You can check get the details of the error using `errorInfo`:
+                $errorInfo = $exception->errorInfo;
+                // Return the response to the client..
+                echo $errorInfo;
+            }
+        }
+    
         return redirect('/cargos');
 
     }
