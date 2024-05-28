@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use App\Models\Curso;
@@ -82,21 +83,30 @@ class CursoController extends Controller
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function update(int $id){
-        $datos = request()->validate([
-            'cod' => ['required','min:3','max:5', Rule::unique('cursos', 'cod')]
-        ]);
-        $curso=Curso::find($id);
-        if($datos['nombre']!=$curso['nombre']){
-            DB::update(
-                'update cursos set nombre = ? where id = ?',
-                [$datos['nombre'],$id]
-            );
+        try{
+            $datos = request()->validate([
+                'nombre' => ['required'],
+                'cod' => ['required','max:5', Rule::unique('cursos', 'cod')->ignore($id)],
+            ]);
+        }catch(Exception $exception){
+            dd($exception);
         }
-        if($datos['cod']!=$curso['cod']){
-            DB::update(
-                'update cursos set cod = ? where id = ?',
-                [$datos['cod'],$id]
-            );
+        $curso=Curso::find($id);
+
+        //Creamos una instancia que no se guarda en la base de datos
+        $newCurso=Curso::make($datos);
+        //Comprobamos si sus atributos son los mismos
+        if(Curso::equals($newCurso,$curso)){
+            dd("Los datos son iguales");
+        }else{
+            try{
+                Curso::find($id)->update($datos);
+            } catch (\Illuminate\Database\QueryException $exception) {
+                // You can check get the details of the error using `errorInfo`:
+                $errorInfo = $exception->errorInfo;
+                // Return the response to the client..
+                echo $errorInfo;
+            }
         }
         return redirect('/cursos');
     }

@@ -30,4 +30,20 @@ class Profesor extends Model
     {
         return $this->hasMany(Curso_Profesor_Asignatura::class);
     }
+    public static function equals(Profesor $prof1, Profesor $prof2){
+        $equal=true;
+
+        if($prof1->nombre!=$prof2->nombre)
+            $equal=false;
+        if($prof1->cod!=$prof2->cod)
+            $equal=false;
+        if($prof1->email!=$prof2->email)
+            $equal=false;
+        if($prof1->especialidad!=$prof2->especialidad)
+            $equal=false;
+        if($prof1->departamento!=$prof2->departamento)
+            $equal=false;
+        return $equal;
+
+    }
 }

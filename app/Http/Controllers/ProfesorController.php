@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use App\Models\Profesor;
@@ -85,40 +86,33 @@ class ProfesorController extends Controller
      * @param  mixed $id
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */public function update(int $id){
-        $datos = request()->validate([
-            'email' => ['required', 'min:5','max:50', 'email'],
-            'cod' => ['required','min:3','max:5']
-        ]);
-        $profesor=Profesor::find($id);
-        if($datos['nombre']!=$profesor['nombre']){
-            DB::update(
-                'update profesores set nombre = ? where id = ?',
-                [$datos['nombre'],$id]
-            );
+        try{
+            $datos = request()->validate([
+                'nombre' => ['required'],
+                'cod' => ['required','max:5', Rule::unique('profesores', 'cod')->ignore($id)],
+                'email' => ['required','min:5','max:50', Rule::unique('profesores', 'email')->ignore($id)],
+                'especialidad' => ['required'],
+                'departamento' => ['required']
+            ]);
+        }catch(Exception $exception){
+            dd($exception);
         }
-        if($datos['email']!=$profesor['email']){
-            DB::update(
-                'update profesores set email = ? where id = ?',
-                [$datos['email'],$id]
-            );
-        }
-        if($datos['cod']!=$profesor['cod']){
-            DB::update(
-                'update profesores set cod = ? where id = ?',
-                [$datos['cod'],$id]
-            );
-        }
-        if($datos['especialidad']!=$profesor['especialidad']){
-            DB::update(
-                'update profesores set especialidad = ? where id = ?',
-                [$datos['especialidad'],$id]
-            );
-        }
-        if($datos['departamento']!=$profesor['departamento']){
-            DB::update(
-                'update profesores set departamento = ? where id = ?',
-                [$datos['departamento'],$id]
-            );
+        $prof=Profesor::find($id);
+
+        //Creamos una instancia que no se guarda en la base de datos
+        $newProf=Profesor::make($datos);
+        //Comprobamos si sus atributos son los mismos
+        if(Profesor::equals($newProf,$prof)){
+            dd("Los datos son iguales");
+        }else{
+            try{
+                Profesor::find($id)->update($datos);
+            } catch (\Illuminate\Database\QueryException $exception) {
+                // You can check get the details of the error using `errorInfo`:
+                $errorInfo = $exception->errorInfo;
+                // Return the response to the client..
+                echo $errorInfo;
+            }
         }
         return redirect('/profesores');
     }

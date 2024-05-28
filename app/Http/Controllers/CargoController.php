@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Support\Str;
 use App\Models\Cargo;
 use Illuminate\Http\Request;
@@ -18,6 +19,7 @@ class CargoController extends Controller
      */
     public function insert()
     {
+        dd(request());
         //We validate the data
         $datos = request()->validate([
             'nombre' => ['required']
@@ -96,11 +98,15 @@ class CargoController extends Controller
      * @param  mixed $id
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function update(int $id){
-        $datos = request()->validate([
-            'nombre' => ['required']
-        ]);
-
+    public function update($id){
+        //dd(request());
+        try{
+            $datos = request()->validate([
+                'nombre' => ['required']
+            ]);
+        }catch(Exception $exception){
+            dd($exception);
+        }
         $cargo=Cargo::find($id);
         //Primer metodo
         /*

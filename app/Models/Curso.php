@@ -25,4 +25,16 @@ class Curso extends Model
     {
         return $this->hasMany(Curso_Profesor_Asignatura::class);
     }
+
+    public static function equals(Curso $curso1, Curso $curso2){
+        $equal=true;
+
+        if($curso1->nombre!=$curso2->nombre)
+            $equal=false;
+        if($curso1->cod!=$curso2->cod)
+            $equal=false;
+
+        return $equal;
+
+    }
 }

@@ -30,7 +30,7 @@
                             <el-input type="number" v-model="form.horas" name="horas" id="horas" maxlength="30"/>
                         </div>
                     </div>
-                    <el-button type="primary" @click="$emit('submit', form)">Añadir</el-button>
+                    <el-button type="primary" @click="$emit('submit', form,data)">Modificar</el-button>
                 </form>
                 <footer class="dialog-footer">
                     <slot name="footer">

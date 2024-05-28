@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use App\Models\Asignatura;
@@ -87,28 +88,32 @@ class AsignaturaController extends Controller
      * @param  mixed $id
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function update(int $id){
-        $datos = request()->validate([
-            'cod' => ['required','min:3','max:5', Rule::unique('asignaturas', 'cod')]
-        ]);
-        $asignatura=Asignatura::find($id);
-        if($datos['nombre']!=$asignatura['nombre']){
-            DB::update(
-                'update asignaturas set nombre = ? where id = ?',
-                [$datos['nombre'],$id]
-            );
+    public function update($id){
+        try{
+            $datos = request()->validate([
+                'nombre' => ['required'],
+                'cod' => ['required','max:5', Rule::unique('asignaturas', 'cod')->ignore($id)],
+                'horas' => ['required','numeric','max:10']
+            ]);
+        }catch(Exception $exception){
+            dd($exception);
         }
-        if($datos['horas']!=$asignatura['horas']){
-            DB::update(
-                'update asignaturas set horas = ? where id = ?',
-                [$datos['horas'],$id]
-            );
-        }
-        if($datos['cod']!=$asignatura['cod']){
-            DB::update(
-                'update asignaturas set cod = ? where id = ?',
-                [$datos['cod'],$id]
-            );
+        $asig=Asignatura::find($id);
+
+        //Creamos una instancia que no se guarda en la base de datos
+        $newAsig=Asignatura::make($datos);
+        //Comprobamos si sus atributos son los mismos
+        if(Asignatura::equals($newAsig,$asig)){
+            dd("Los datos son iguales");
+        }else{
+            try{
+                Asignatura::find($id)->update($datos);
+            } catch (\Illuminate\Database\QueryException $exception) {
+                // You can check get the details of the error using `errorInfo`:
+                $errorInfo = $exception->errorInfo;
+                // Return the response to the client..
+                echo $errorInfo;
+            }
         }
         return redirect('/asignaturas');
     }    

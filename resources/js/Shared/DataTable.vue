@@ -63,8 +63,10 @@ const handleDelete = (row) => {
     })
 }
 
-const submit = (form) => {
-    router.post(props.route, form, {
+const submit = (form,row) => {
+    //console.log(`${props.route}/${row.id}`)
+
+    router.put(`${props.route}/${row.id}`,form, {
         preserveState: "errors"
     })
 }
