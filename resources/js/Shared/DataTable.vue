@@ -13,18 +13,12 @@
                 <el-input v-model="search" size="small" placeholder="Type to search" />
             </template>
             <template #default="scope">
-                <el-button @click="handleEdit(scope.row)"  size="small">Editar</el-button>
-                <el-button
-                    size="small"
-                    type="danger"
-                    @click="handleDelete(scope.row)"
-                >
-                    Delete
-                </el-button>
+                <el-button size="small" type="primary" @click="handleEdit(scope.row)">Editar</el-button>
+                <el-button size="small" type="danger" @click="handleDelete(scope.row)">Delete</el-button>
             </template>
         </el-table-column>
     </el-table>
-    <Form :isVisible="showDialog" :data="row" @submit="submit">
+    <Form :isVisible="showDialog" :data="row" :route="route" :action='action'>
         <template #footer>
             <button @click="showDialog = false">Cerrar</button>
         </template>
@@ -43,6 +37,7 @@ const props = defineProps({
 
 let row = ref({})
 let showDialog = ref(false);
+const action = ref('edit')
 const search = ref('')
 const filterTableData = computed(() =>
     props.data.filter(
@@ -63,10 +58,5 @@ const handleDelete = (row) => {
     })
 }
 
-const submit = (form) => {
-    router.post(props.route, form, {
-        preserveState: "errors"
-    })
-}
 
 </script>
