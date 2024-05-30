@@ -15,7 +15,6 @@
 
 <script setup>
 import Table from "../Shared/DataTable.vue"
-import AddForm from "../Forms/AddForm.vue"
 import Form from "../Forms/EditForm.vue"
 import {ref} from 'vue'
 

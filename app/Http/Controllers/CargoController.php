@@ -47,6 +47,21 @@ class CargoController extends Controller
         ]);
         return $cargos;
     }*/
+    
+
+    public function searchAll(){
+        $cargos = Cargo::all();
+        $ret=[];
+        //Return only what's important
+        foreach($cargos as $cargo){
+            $ret[]=[
+                'id' => $cargo['id'],
+                'nombre'=>$cargo['nombre']
+            ];
+        }
+        return $ret;
+    }
+
     /**
      * Search
      *

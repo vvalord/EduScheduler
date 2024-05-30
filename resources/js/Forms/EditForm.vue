@@ -30,9 +30,26 @@
                             <el-input type="text" v-model="form.departamento" name="departamento" id="departamento"
                                       maxlength="30"/>
                         </div>
+                        <div v-if="$page.component === 'Profesores'">
+                            <label for="cargo">Seleccione un cargo:</label>
+                            <select v-model="form.cargo_id" name="cargo" id="cargo">
+                                <option v-for="cargo in cargos.data" :key="cargo.id" :value="cargo.id">{{ cargo.nombre }}</option>
+                            </select>
+                        </div>
+                        <div v-if="$page.component === 'Profesores'">
+                            <label for="horas">Horas:</label>
+                            <el-input type="number" v-model="form.horas" name="horas" id="horas" value="1" :disabled="!form.cargo_id"/>
+                        </div>
+                        <div v-if="$page.component === 'Profesores'">
+                            <label for="horario">Seleccione el turno:</label>
+                            <select v-model="form.turno" name="horario" id="horario" :disabled="!form.cargo_id">
+                                <option value="mañana">Mañana</option>
+                                <option value="tarde">Tarde</option>
+                            </select>
+                        </div>
                         <div v-if="$page.component === 'Asignaturas'">
                             <label for="horas">Horas:</label>
-                            <el-input type="number" v-model="form.horas" name="horas" id="horas" maxlength="30"/>
+                            <el-input type="number" v-model="form.horas" name="horas" id="horas" value ="1"/>
                         </div>
                     </div>
                     <el-button v-if="action === 'edit'" type="primary" @click="submit(form)">Editar</el-button>
@@ -49,8 +66,12 @@
 </template>
 
 <script setup>
-import {ref, watch} from 'vue'
+import {ref, watch, onMounted } from 'vue'
 import {router} from "@inertiajs/vue3";
+import axios from 'axios';
+
+let cargos=ref();
+
 
 const props = defineProps({
     isVisible: Boolean,
@@ -66,15 +87,22 @@ watch(() => props.data, (newValue) => {
 
 const submit = (form) => {
     if (props.action === 'edit') {
-        router.put(`${props.route}/${props.data.id}`, form, {
+        /*router.put(`${props.route}/${props.data.id}`, form, {
             preserveState: "errors"
-        })
+        })*/
+        console.log(form.cargo)
     } else if (props.action === 'add') {
         router.post(props.route, form, {
             preserveState: "errors"
         })
     }
 }
+onMounted(() => {
+    axios
+      .get('/cargosAll')
+      .then(response => (cargos = response));
+      
+})
 
 </script>
 

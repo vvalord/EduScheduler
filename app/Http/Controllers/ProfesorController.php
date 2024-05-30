@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Asignacion_Cargo;
 use Exception;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -32,13 +33,26 @@ class ProfesorController extends Controller
 
         //With the validated data, we try to create the new teacher
         try {
-             Profesor::create($datos);
+             $profesor=Profesor::create($datos);
         } catch (\Illuminate\Database\QueryException $exception) {
             // You can check get the details of the error using `errorInfo`:
             $errorInfo = $exception->errorInfo;
 
             // Return the response to the client..
             echo $errorInfo;
+        }
+
+        if(request()->validate(['cargo' => ['required']])){
+            $datosAsignacion=request()->validate([
+                'cargo_id' => ['required'],
+                //'horas' => ['required'],
+                'turno' => ['required']]);
+            $datosAsignacion['profesor_id']=$profesor['id'];
+            try {
+                Asignacion_Cargo::create($datosAsignacion);
+           } catch (\Illuminate\Database\QueryException $exception) {
+               dd("error");
+           }
         }
 
         return redirect('/profesores');
@@ -66,7 +80,10 @@ class ProfesorController extends Controller
         $ret=[];
         //Return only what's important
         foreach($profesores as $profesor){
-            $ret[]=['id'=>$profesor['id'],'nombre'=>$profesor['nombre'],'cod'=>$profesor['cod'],'email'=>$profesor['email'],'especialidad'=>$profesor['especialidad'],'departamento'=>$profesor['departamento'],'total_horas'=>$profesor['total_horas']];
+            //$asignacion=Asignacion_Cargo::query()->where('profesor_id',$profesor['id']);
+            $ret[]=['id'=>$profesor['id'],'nombre'=>$profesor['nombre'],'cod'=>$profesor['cod'],'email'=>$profesor['email'],'especialidad'=>$profesor['especialidad'],
+            //'cargo_id'=>$asignacion['cargo_id'],'turno'=>$asignacion['turno'],
+            'departamento'=>$profesor['departamento'],'total_horas'=>$profesor['total_horas']];
         }
         return Inertia::render('Profesores',[
             'profesores'=>$ret
