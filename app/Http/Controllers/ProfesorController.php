@@ -81,10 +81,14 @@ class ProfesorController extends Controller
             $ret=[];
             //Return only what's important
             foreach($profesores as $profesor){
-                $asignacion=Asignacion_Cargo::query()->where('profesor_id',$profesor['id'])->get()->first();
+                if($asignacion=Asignacion_Cargo::query()->where('profesor_id',$profesor['id'])->get()->first()){
                 $ret[]=['id'=>$profesor['id'],'nombre'=>$profesor['nombre'],'cod'=>$profesor['cod'],'email'=>$profesor['email'],'especialidad'=>$profesor['especialidad'],
                 'cargo_id'=>$asignacion->cargo_id,'turno'=>$asignacion->turno,
                 'departamento'=>$profesor['departamento'],'total_horas'=>$profesor['total_horas']];
+                }else{
+                    $ret[]=['id'=>$profesor['id'],'nombre'=>$profesor['nombre'],'cod'=>$profesor['cod'],'email'=>$profesor['email'],'especialidad'=>$profesor['especialidad'],
+                'departamento'=>$profesor['departamento'],'total_horas'=>$profesor['total_horas']];
+                }
             }
         }else{
             $ret=false;
