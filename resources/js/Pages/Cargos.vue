@@ -26,6 +26,7 @@ const name = '/cargos';
 const action = ref('add')
 let showDialog = ref(false);
 
+console.log("d");
 </script>
 
 <style scoped>

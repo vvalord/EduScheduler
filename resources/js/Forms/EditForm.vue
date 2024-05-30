@@ -87,9 +87,9 @@ watch(() => props.data, (newValue) => {
 
 const submit = (form) => {
     if (props.action === 'edit') {
-        /*router.put(`${props.route}/${props.data.id}`, form, {
+        router.put(`${props.route}/${props.data.id}`, form, {
             preserveState: "errors"
-        })*/
+        })
         console.log(form.cargo)
     } else if (props.action === 'add') {
         router.post(props.route, form, {

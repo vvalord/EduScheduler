@@ -42,7 +42,7 @@ class ProfesorController extends Controller
             echo $errorInfo;
         }
 
-        if(request()->validate(['cargo' => ['required']])){
+        if(request()->validate(['cargo_id' => ['required']])){
             $datosAsignacion=request()->validate([
                 'cargo_id' => ['required'],
                 //'horas' => ['required'],
@@ -77,13 +77,17 @@ class ProfesorController extends Controller
     public function search(){
         //Obtain all the teachers
         $profesores = Profesor::all();
-        $ret=[];
-        //Return only what's important
-        foreach($profesores as $profesor){
-            //$asignacion=Asignacion_Cargo::query()->where('profesor_id',$profesor['id']);
-            $ret[]=['id'=>$profesor['id'],'nombre'=>$profesor['nombre'],'cod'=>$profesor['cod'],'email'=>$profesor['email'],'especialidad'=>$profesor['especialidad'],
-            //'cargo_id'=>$asignacion['cargo_id'],'turno'=>$asignacion['turno'],
-            'departamento'=>$profesor['departamento'],'total_horas'=>$profesor['total_horas']];
+        if(empty($profesores['items'])){
+            $ret=[];
+            //Return only what's important
+            foreach($profesores as $profesor){
+                $asignacion=Asignacion_Cargo::query()->where('profesor_id',$profesor['id'])->get()->first();
+                $ret[]=['id'=>$profesor['id'],'nombre'=>$profesor['nombre'],'cod'=>$profesor['cod'],'email'=>$profesor['email'],'especialidad'=>$profesor['especialidad'],
+                'cargo_id'=>$asignacion->cargo_id,'turno'=>$asignacion->turno,
+                'departamento'=>$profesor['departamento'],'total_horas'=>$profesor['total_horas']];
+            }
+        }else{
+            $ret=false;
         }
         return Inertia::render('Profesores',[
             'profesores'=>$ret
@@ -119,9 +123,8 @@ class ProfesorController extends Controller
         //Creamos una instancia que no se guarda en la base de datos
         $newProf=Profesor::make($datos);
         //Comprobamos si sus atributos son los mismos
-        if(Profesor::equals($newProf,$prof)){
-            dd("Los datos son iguales");
-        }else{
+        if(!Profesor::equals($newProf,$prof)){
+            
             try{
                 Profesor::find($id)->update($datos);
             } catch (\Illuminate\Database\QueryException $exception) {
@@ -130,6 +133,23 @@ class ProfesorController extends Controller
                 // Return the response to the client..
                 echo $errorInfo;
             }
+        }
+        
+        if(request()->validate(['cargo_id' => ['required']])){
+            $datosAsignacion=request()->validate([
+                'cargo_id' => ['required'],
+                //'horas' => ['required'],
+                'turno' => ['required']]);
+                $asignacion=Asignacion_Cargo::query()->where('profesor_id',$id)->get()->first();
+                $datosAsignacion['profesor_id']=$id;
+                $newAsignacion=Asignacion_Cargo::make($datosAsignacion);
+                if(!Asignacion_Cargo::equals($asignacion,$newAsignacion)){
+                    try{
+                        Asignacion_Cargo::query()->where('profesor_id',$id)->get()->first()->update($datosAsignacion);
+                    } catch (\Illuminate\Database\QueryException $exception) {
+                        dd("error");
+                    }
+                }
         }
         return redirect('/profesores');
     }
