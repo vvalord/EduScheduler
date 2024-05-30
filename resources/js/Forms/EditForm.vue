@@ -1,36 +1,42 @@
 <template>
     <teleport to="body">
+        <slot name="default"></slot>
         <div v-if="isVisible" class="dialog-overlay">
             <div class="dialog">
                 <h2>{{ $page.component }}</h2>
                 <form @submit.prevent="submit" method="POST">
                     <div class="dialog-form">
-                        <div v-if="data.nombre">
+                        <div
+                            v-if="$page.component === 'Profesores'||$page.component === 'Cargos' || $page.component === 'Asignaturas'||$page.component === 'Cursos'">
                             <label for="nombre">Nombre:</label>
                             <el-input type="text" v-model="form.nombre" name="nombre" id="nombre" maxlength="30"/>
                         </div>
-                        <div v-if="data.cod">
+                        <div
+                            v-if="$page.component === 'Profesores' || $page.component === 'Asignaturas'||$page.component === 'Cursos'">
                             <label for="cod">Clave:</label>
                             <el-input type="text" v-model="form.cod" name="cod" id="cod" maxlength="30"/>
                         </div>
-                        <div v-if="data.email">
+                        <div v-if="$page.component === 'Profesores'">
                             <label for="email">Email:</label>
                             <el-input type="text" v-model="form.email" name="email" id="email" maxlength="30"/>
                         </div>
-                        <div v-if="data.especialidad">
+                        <div v-if="$page.component === 'Profesores'">
                             <label for="especialidad">Especialidad:</label>
-                            <el-input type="text" v-model="form.especialidad" name="especialidad" id="especialidad" maxlength="30"/>
+                            <el-input type="text" v-model="form.especialidad" name="especialidad" id="especialidad"
+                                      maxlength="30"/>
                         </div>
-                        <div v-if="data.departamento">
+                        <div v-if="$page.component === 'Profesores'">
                             <label for="departamento">Departamento:</label>
-                            <el-input type="text" v-model="form.departamento" name="departamento" id="departamento" maxlength="30"/>
+                            <el-input type="text" v-model="form.departamento" name="departamento" id="departamento"
+                                      maxlength="30"/>
                         </div>
-                        <div v-if="data.horas">
-                            <label for="horas">Total de horas:</label>
+                        <div v-if="$page.component === 'Asignaturas'">
+                            <label for="horas">Horas:</label>
                             <el-input type="number" v-model="form.horas" name="horas" id="horas" maxlength="30"/>
                         </div>
                     </div>
-                    <el-button type="primary" @click="$emit('submit', form)">Añadir</el-button>
+                    <el-button v-if="action === 'edit'" type="primary" @click="submit(form)">Editar</el-button>
+                    <el-button v-if="action === 'add'" type="primary" @click="submit(form)">Añadir</el-button>
                 </form>
                 <footer class="dialog-footer">
                     <slot name="footer">
@@ -44,18 +50,31 @@
 
 <script setup>
 import {ref, watch} from 'vue'
+import {router} from "@inertiajs/vue3";
 
 const props = defineProps({
     isVisible: Boolean,
     data: Object,
-    submit: Function
+    action: String,
+    route: String
 })
-defineEmits(['submit'])
 
 const form = ref({})
 watch(() => props.data, (newValue) => {
     form.value = {...newValue};
 });
+
+const submit = (form) => {
+    if (props.action === 'edit') {
+        router.put(`${props.route}/${props.data.id}`, form, {
+            preserveState: "errors"
+        })
+    } else if (props.action === 'add') {
+        router.post(props.route, form, {
+            preserveState: "errors"
+        })
+    }
+}
 
 </script>
 
