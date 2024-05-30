@@ -19,7 +19,7 @@ class CargoController extends Controller
      */
     public function insert()
     {
-        dd(request());
+        //dd(request());
         //We validate the data
         $datos = request()->validate([
             'nombre' => ['required']

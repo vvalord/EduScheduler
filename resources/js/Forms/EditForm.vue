@@ -30,8 +30,8 @@
                             <el-input type="text" v-model="form.departamento" name="departamento" id="departamento"
                                       maxlength="30"/>
                         </div>
-                        <div v-if="$page.component === 'Profesores' || $page.component === 'Asignaturas'">
-                            <label for="horas">Total de horas:</label>
+                        <div v-if="$page.component === 'Asignaturas'">
+                            <label for="horas">Horas:</label>
                             <el-input type="number" v-model="form.horas" name="horas" id="horas" maxlength="30"/>
                         </div>
                     </div>
