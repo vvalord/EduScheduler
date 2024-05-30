@@ -1,5 +1,5 @@
 <template>
-    <Table :data="cargos" :route="name"/>
+    <Table v-if="cargos!=false" :data="cargos" :route="name"/>
 
     <Form :is-visible="showDialog" :route="name" :action='action'>
         <template #default>
@@ -26,7 +26,6 @@ const name = '/cargos';
 const action = ref('add')
 let showDialog = ref(false);
 
-console.log("d");
 </script>
 
 <style scoped>

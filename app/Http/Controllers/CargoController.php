@@ -59,6 +59,7 @@ class CargoController extends Controller
                 'nombre'=>$cargo['nombre']
             ];
         }
+        
         return $ret;
     }
 
@@ -84,13 +85,17 @@ class CargoController extends Controller
 
         //Obtain all the positions
         $cargos = Cargo::all();
-        $ret=[];
-        //Return only what's important
-        foreach($cargos as $cargo){
-            $ret[]=[
-                'id' => $cargo['id'],
-                'nombre'=>$cargo['nombre']
-            ];
+        if(empty($cargos['items'])){
+            $ret=[];
+            //Return only what's important
+            foreach($cargos as $cargo){
+                $ret[]=[
+                    'id' => $cargo['id'],
+                    'nombre'=>$cargo['nombre']
+                ];
+            }
+        }else{
+            $ret=false;
         }
         return Inertia::render('Cargos',[
             'cargos'=>$ret
