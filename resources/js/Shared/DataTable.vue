@@ -29,6 +29,7 @@
 import { computed, ref } from 'vue'
 import Form from "../Forms/EditForm.vue"
 import {router} from "@inertiajs/vue3";
+import {ElNotification, ElMessage, ElMessageBox} from "element-plus";
 
 
 const props = defineProps({
@@ -53,17 +54,38 @@ const handleEdit = (ScopeRow) => {
     showDialog.value = true;
 }
 const handleDelete = (row) => {
-    //const confirmed = await dialog.confirm(message)
-    if(confirm("Do you really want to delete?")){
-        // do the thing needing confirming
-
-        console.log(`${props.route}/${row.id}`)
-        router.delete(`${props.route}/${row.id}`, {
-            preserveState: "errors"
-        })
-    }
+    open(row)
 }
 
+const notification = (title, message, type) => {
+    ElNotification({
+        title: title,
+        message: message,
+        type: type,
+    })
+}
+
+const open = (row) => {
+    ElMessageBox.confirm('¿Seguro que quiere eliminar este registro?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+    })
+        .then(() => {
+            router.delete(`${props.route}/${row.id}`, {
+                preserveState: "errors",
+                onSuccess: () => {
+                    notification('Info', 'Se ha eliminado el registro correctamente', 'info')
+                }
+            })
+        })
+        .catch(() => {
+            ElMessage({
+                type: 'info',
+                message: 'Delete canceled',
+            })
+        })
+}
 
 
 </script>

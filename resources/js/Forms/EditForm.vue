@@ -51,6 +51,7 @@
 <script setup>
 import {ref, watch} from 'vue'
 import {router} from "@inertiajs/vue3";
+import { ElNotification } from 'element-plus'
 
 const props = defineProps({
     isVisible: Boolean,
@@ -67,13 +68,27 @@ watch(() => props.data, (newValue) => {
 const submit = (form) => {
     if (props.action === 'edit') {
         router.put(`${props.route}/${props.data.id}`, form, {
-            preserveState: "errors"
+            preserveState: "errors",
+            onSuccess: () => {
+                notification('Info', 'Se ha actualizado el registro correctamente', 'info')
+            }
         })
     } else if (props.action === 'add') {
         router.post(props.route, form, {
-            preserveState: "errors"
+            preserveState: "errors",
+            onSuccess: () => {
+                notification('Success', 'Se ha creado el registro correctamente', 'success')
+            }
         })
     }
+}
+
+const notification = (title, message, type) => {
+    ElNotification({
+        title: title,
+        message: message,
+        type: type,
+    })
 }
 
 </script>
