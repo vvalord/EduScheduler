@@ -16,7 +16,7 @@ class ProfesorController extends Controller
      * Insert
      *
      * Takes the data sent from the form and create a new teacher
-     * 
+     *
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function insert()
@@ -71,7 +71,7 @@ class ProfesorController extends Controller
      * Search
      *
      * Sends the list of teachers found in the database
-     * 
+     *
      * @return \Inertia\Response List of teachers
      */
     public function search(){
@@ -107,7 +107,7 @@ class ProfesorController extends Controller
      * Update
      *
      * Takes the data sent from the form and updates a teacher
-     * 
+     *
      * @param  mixed $id
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */public function update(int $id){
@@ -128,7 +128,7 @@ class ProfesorController extends Controller
         $newProf=Profesor::make($datos);
         //Comprobamos si sus atributos son los mismos
         if(!Profesor::equals($newProf,$prof)){
-            
+
             try{
                 Profesor::find($id)->update($datos);
             } catch (\Illuminate\Database\QueryException $exception) {
@@ -138,7 +138,7 @@ class ProfesorController extends Controller
                 echo $errorInfo;
             }
         }
-        
+
         if(request()->validate(['cargo_id' => ['required']])){
             $datosAsignacion=request()->validate([
                 'cargo_id' => ['required'],
@@ -160,7 +160,7 @@ class ProfesorController extends Controller
 
     /**
      * Delete
-     * 
+     *
      * Delete a teacher
      *
      * @param  mixed $id
