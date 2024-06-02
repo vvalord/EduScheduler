@@ -21,6 +21,13 @@ class ProfesorController extends Controller
      */
     public function insert()
     {
+        if (request()['cargo_id']){
+            $datosAsignacion=request()->validate([
+                'cargo_id' => ['required'],
+                //'horas' => ['required'],
+                'turno' => ['required']]);
+
+        }
         //We validate the data
         $datos = request()->validate([
             'nombre' => ['required'],
@@ -42,17 +49,13 @@ class ProfesorController extends Controller
             echo $errorInfo;
         }
 
-        if(request()->validate(['cargo_id' => ['required']])){
-            $datosAsignacion=request()->validate([
-                'cargo_id' => ['required'],
-                //'horas' => ['required'],
-                'turno' => ['required']]);
+        if(isset($datosAsignacion)){
             $datosAsignacion['profesor_id']=$profesor['id'];
             try {
                 Asignacion_Cargo::create($datosAsignacion);
-           } catch (\Illuminate\Database\QueryException $exception) {
-               dd("error");
-           }
+            } catch (\Illuminate\Database\QueryException $exception) {
+                dd("error");
+            }
         }
 
         return redirect('/profesores');
