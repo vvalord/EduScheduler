@@ -144,14 +144,23 @@ class ProfesorController extends Controller
                 'cargo_id' => ['required'],
                 //'horas' => ['required'],
                 'turno' => ['required']]);
-                $asignacion=Asignacion_Cargo::query()->where('profesor_id',$id)->get()->first();
-                $datosAsignacion['profesor_id']=$id;
-                $newAsignacion=Asignacion_Cargo::make($datosAsignacion);
-                if(!Asignacion_Cargo::equals($asignacion,$newAsignacion)){
-                    try{
-                        Asignacion_Cargo::query()->where('profesor_id',$id)->get()->first()->update($datosAsignacion);
+
+                if(!$asignacion=Asignacion_Cargo::where('profesor_id',$id)->get()->first()){
+                    $datosAsignacion['profesor_id']=$id;
+                    try {
+                        Asignacion_Cargo::create($datosAsignacion);
                     } catch (\Illuminate\Database\QueryException $exception) {
                         dd("error");
+                    }
+                } else {
+                    $datosAsignacion['profesor_id'] = $id;
+                    $newAsignacion = Asignacion_Cargo::make($datosAsignacion);
+                    if (!Asignacion_Cargo::equals($asignacion, $newAsignacion)) {
+                        try {
+                            Asignacion_Cargo::query()->where('profesor_id', $id)->get()->first()->update($datosAsignacion);
+                        } catch (\Illuminate\Database\QueryException $exception) {
+                            dd("error");
+                        }
                     }
                 }
         }

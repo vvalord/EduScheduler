@@ -95,7 +95,7 @@ const props = defineProps({
     data: Object,
     action: String,
     route: String
-})
+});
 
 const form = ref({})
 watch(() => props.data, (newValue) => {
@@ -118,7 +118,7 @@ const submit = (form) => {
         router.put(`${props.route}/${props.data.id}`, form, {
             preserveState: "errors",
             onSuccess: () => {
-                notification('Info', 'Se ha actualizado el registro correctamente', ' ')
+                notification('Info', 'Se ha actualizado el registro correctamente', 'info')
             },
             onError: (errorBag) => {
                 for (const key in errors) {
