@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Asignacion_Cargo;
 use Exception;
 use Illuminate\Support\Str;
 use App\Models\Cargo;
@@ -47,6 +48,22 @@ class CargoController extends Controller
         ]);
         return $cargos;
     }*/
+    
+
+    public function searchAll(){
+        $cargos = Cargo::all();
+        $ret=[];
+        //Return only what's important
+        foreach($cargos as $cargo){
+            $ret[]=[
+                'id' => $cargo['id'],
+                'nombre'=>$cargo['nombre']
+            ];
+        }
+        
+        return $ret;
+    }
+
     /**
      * Search
      *
@@ -69,13 +86,17 @@ class CargoController extends Controller
 
         //Obtain all the positions
         $cargos = Cargo::all();
-        $ret=[];
-        //Return only what's important
-        foreach($cargos as $cargo){
-            $ret[]=[
-                'id' => $cargo['id'],
-                'nombre'=>$cargo['nombre']
-            ];
+        if(empty($cargos['items'])){
+            $ret=[];
+            //Return only what's important
+            foreach($cargos as $cargo){
+                $ret[]=[
+                    'id' => $cargo['id'],
+                    'nombre'=>$cargo['nombre']
+                ];
+            }
+        }else{
+            $ret=false;
         }
         return Inertia::render('Cargos',[
             'cargos'=>$ret
@@ -156,6 +177,7 @@ class CargoController extends Controller
         //$deleted = DB::delete('delete from cargos where id=?',[1, $id]);
         //Cargo::query()->where('id',$id)->delete();
         try{
+            Asignacion_Cargo::query()->where('cargo_id',$id)->delete();
             Cargo::find($id)->delete();
         } catch (\Illuminate\Database\QueryException $exception) {
             // You can check get the details of the error using `errorInfo`:

@@ -60,15 +60,19 @@ class AsignaturaController extends Controller
     public function search(){
         //Obtain all the assignments
         $asignaturas = Asignatura::all();
-        $ret=[];
-        //Return only what's important
-        foreach($asignaturas as $asignatura){
-            $ret[]=[
-                'id'=>$asignatura['id'],
-                'nombre'=>$asignatura['nombre'],
-                'cod'=>$asignatura['cod'],
-                'horas'=>$asignatura['horas']
-            ];
+        if(empty($asignaturas['items'])){
+            $ret=[];
+            //Return only what's important
+            foreach($asignaturas as $asignatura){
+                $ret[]=[
+                    'id'=>$asignatura['id'],
+                    'nombre'=>$asignatura['nombre'],
+                    'cod'=>$asignatura['cod'],
+                    'horas'=>$asignatura['horas']
+                ];
+            }
+        }else{
+            $ret=false;
         }
         return Inertia::render('Asignaturas',[
             'asignaturas'=>$ret

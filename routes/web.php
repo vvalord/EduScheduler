@@ -72,7 +72,7 @@ Route::delete('/cursos/{id}',[CursoController::class,'delete']);
 /////
 //Listado cargos
 Route::get('/cargos', [CargoController::class,'search']);
-
+Route::get('/cargosAll', [CargoController::class,'searchAll']);
 //Enviar datos from Cargo
 Route::post('/cargos',[CargoController::class,'insert']);
 

@@ -1,5 +1,5 @@
 <template>
-    <Table :data="cursos" :route="name"/>
+    <Table v-if="cursos!=false" :data="cursos" :route="name"/>
     <Form :is-visible="showDialog" :route="name" :action='action'>
         <template #default>
             <div class="add-button">

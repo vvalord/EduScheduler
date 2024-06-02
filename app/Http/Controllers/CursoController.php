@@ -58,14 +58,19 @@ class CursoController extends Controller
     public function search(){
         //Obtain all the courses
         $cursos = Curso::all();
-        $ret=[];
-        //Return only what's important
-        foreach($cursos as $curso){
-            $ret[]=['id'=>$curso['id'],'nombre'=>$curso['nombre'],'cod'=>$curso['cod']];
+        if(empty($cursos['items'])){
+            $ret=[];
+            //Return only what's important
+            foreach($cursos as $curso){
+                $ret[]=['id'=>$curso['id'],'nombre'=>$curso['nombre'],'cod'=>$curso['cod']];
+            }
+        }else{
+            $ret=false;
         }
         return Inertia::render('Cursos',[
             'cursos'=>$ret
         ]);
+    
     }
     /*
     public function searchById(int $id){

@@ -1,5 +1,5 @@
 <template>
-    <Table :data="cargos" :route="name"/>
+    <Table v-if="cargos!=false" :data="cargos" :route="name"/>
 
     <Form :is-visible="showDialog" :route="name" :action='action'>
         <template #default>
@@ -15,7 +15,6 @@
 
 <script setup>
 import Table from "../Shared/DataTable.vue"
-import AddForm from "../Forms/AddForm.vue"
 import Form from "../Forms/EditForm.vue"
 import {ref} from 'vue'
 
