@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
-use App\Models\Curso;
 use App\Models\Curso_Profesor_Asignatura;
-use Illuminate\Support\Facades\DB;
+use Exception;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class CursoController extends Controller
+class CAPController extends Controller
 {
     /**
      * Insert
@@ -19,47 +16,17 @@ class CursoController extends Controller
      * 
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function insert()
+    public static function crear($curso, $asignatura)
     {
-        if (request()['asignaturas']){
-            $asignaturas=request()->validate([
-                'asignaturas' => ['required','array']
-            ]);
 
-        }
-        //We validate the data
-        $datos = request()->validate([
-            'nombre' => ['required'],
-            'cod' => ['required','max:5', Rule::unique('cursos', 'cod')]
-        ]);
 
         //With the validated data, we try to create the new course
         try{
-         $curso=Curso::create($datos);
+         Curso_Profesor_Asignatura::create();
             //If an error occurs, we send the exception
         } catch (\Illuminate\Database\QueryException $exception) {
-            // You can check get the details of the error using `errorInfo`:
-            $errorInfo = $exception->errorInfo;
-
-            // Return the response to the client..
-            echo $errorInfo;
+            dd('error');
         }
-        
-        //Crear asignaciones curso-asignatura
-        if($asignaturas){
-            try{
-                foreach($asignaturas as $asignatura){
-                    Curso_Profesor_Asignatura::crear($curso->id, $asignatura);
-                }
-            } catch (\Illuminate\Database\QueryException $exception) {
-                // You can check get the details of the error using `errorInfo`:
-                $errorInfo = $exception->errorInfo;
-
-                // Return the response to the client..
-                echo $errorInfo;
-            }
-        }
-        return redirect('/cursos');
     }
 
     /*
@@ -79,27 +46,26 @@ class CursoController extends Controller
      */
     public function search(){
         //Obtain all the courses
-        $cursos = Curso::all();
+        $cursos = Curso_Profesor_Asignatura::all();
         if(empty($cursos['items'])){
             $ret=[];
             //Return only what's important
             foreach($cursos as $curso){
-                $ret[]=['id'=>$curso['id'],'nombre'=>$curso['nombre'],'cod'=>$curso['cod']];
+                if(isset($curso['profesor_id']))
+                    $ret[]=['id'=>$curso['id'],'curso_id'=>$curso['curso_id'],'asignatura_id'=>$curso['asignatura_id'],'profesor_id'=>$curso['profesor_id']];
+                else
+                    $ret[]=['id'=>$curso['id'],'curso_id'=>$curso['curso_id'],'asignatura_id'=>$curso['asignatura_id']];
             }
         }else{
             $ret=false;
         }
-        return Inertia::render('Cursos',[
+        return Inertia::render('Home',[
             'cursos'=>$ret
         ]);
     
     }
-    /*
-    public function searchById(int $id){
-        $curso=DB::select("SELECT * FROM cursos where id=?",[1, $id]);
-        return $curso;
-    }
-    */
+
+    
 
      /**
      * Update
@@ -109,33 +75,26 @@ class CursoController extends Controller
      * @param  mixed $id
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function update(int $id){
+    public function update(){
         try{
             $datos = request()->validate([
-                'nombre' => ['required'],
-                'cod' => ['required','max:5', Rule::unique('cursos', 'cod')->ignore($id)],
+                'curso_id'=> ['required'],
+                'asignatura_id'=> ['required'],
+                'profesor_id' => ['required'],
             ]);
         }catch(Exception $exception){
             dd($exception);
         }
-        $curso=Curso::find($id);
-
-        //Creamos una instancia que no se guarda en la base de datos
-        $newCurso=Curso::make($datos);
-        //Comprobamos si sus atributos son los mismos
-        if(Curso::equals($newCurso,$curso)){
-            dd("Los datos son iguales");
-        }else{
             try{
-                Curso::find($id)->update($datos);
+                $asignacion=Curso_Profesor_Asignatura::where('curso_id',$datos['curso_id'])->where('asignatura_id',$datos['asignatura_id'])->get()->first();
+                $asignacion->profesor_id = $datos['profesor_id'];
             } catch (\Illuminate\Database\QueryException $exception) {
                 // You can check get the details of the error using `errorInfo`:
                 $errorInfo = $exception->errorInfo;
                 // Return the response to the client..
                 echo $errorInfo;
             }
-        }
-        return redirect('/cursos');
+        return redirect('/home');
     }
 
     /**
@@ -148,7 +107,7 @@ class CursoController extends Controller
      */
     public function delete(int $id){
         try{
-            Curso::find($id)->delete();
+            Curso_Profesor_Asignatura::find($id)->delete();
         } catch (\Illuminate\Database\QueryException $exception) {
             // You can check get the details of the error using `errorInfo`:
             $errorInfo = $exception->errorInfo;
@@ -156,7 +115,5 @@ class CursoController extends Controller
             // Return the response to the client..
             echo $errorInfo;
         }
-        return redirect('/cursos');
     }
-
 }
