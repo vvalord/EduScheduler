@@ -30,6 +30,19 @@ class Profesor extends Model
     {
         return $this->hasMany(Curso_Profesor_Asignatura::class);
     }
+
+    public function courses()
+    {
+        return $this->belongsToMany(Curso::class, 'curso_profesor_asignatura')
+            ->withPivot('asignatura_id', 'horas');
+    }
+
+    public function subjects()
+    {
+        return $this->belongsToMany(Asignatura::class, 'curso_profesor_asignatura')
+            ->withPivot('curso_id', 'horas');
+    }
+
     public static function equals(Profesor $prof1, Profesor $prof2){
         $equal=true;
 

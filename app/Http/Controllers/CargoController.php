@@ -10,12 +10,12 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class CargoController extends Controller
-{    
+{
     /**
      * Insert
      *
      * Takes the data sent from the form and create a new position
-     * 
+     *
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function insert()
@@ -48,7 +48,7 @@ class CargoController extends Controller
         ]);
         return $cargos;
     }*/
-    
+
 
     public function searchAll(){
         $cargos = Cargo::all();
@@ -60,7 +60,7 @@ class CargoController extends Controller
                 'nombre'=>$cargo['nombre']
             ];
         }
-        
+
         return $ret;
     }
 
@@ -68,7 +68,7 @@ class CargoController extends Controller
      * Search
      *
      * Sends the list of positions found in the database
-     * 
+     *
      * @return \Inertia\Response List of positions
      */
     public function search(){
@@ -115,7 +115,7 @@ class CargoController extends Controller
      * Update
      *
      * Takes the data sent from the form and updates a position
-     * 
+     *
      * @param  mixed $id
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
@@ -160,14 +160,14 @@ class CargoController extends Controller
                 echo $errorInfo;
             }
         }
-    
+
         return redirect('/cargos');
 
     }
 
     /**
      * Delete
-     * 
+     *
      * Delete a position
      *
      * @param  mixed $id

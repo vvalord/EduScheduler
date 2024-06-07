@@ -4,13 +4,13 @@
         <div v-if="isVisible" class="dialog-overlay">
             <div class="dialog">
                 <h2>{{ $page.component }}</h2>
-                <form @submit.prevent="submit" method="POST">
+                <form @submit.prevent="submit">
                     <div class="dialog-form">
                         <el-form-item
                             label="Nombre"
                             :error="errors.nombre"
                             v-if="$page.component === 'Profesores'||$page.component === 'Cargos' || $page.component === 'Asignaturas'||$page.component === 'Cursos'">
-                            <el-input type="text" v-model="form.nombre" name="nombre" id="nombre" maxlength="30"/>
+                            <el-input type="text" v-model="form.nombre" name="nombre" id="nombre" maxlength="70"/>
                         </el-form-item>
                         <el-form-item
                             label="Clave"
@@ -67,6 +67,22 @@
                             v-if="$page.component === 'Asignaturas'">
                             <el-input type="number" v-model="form.horas" name="horas" id="horas" max="10" min="1"/>
                         </el-form-item>
+                        <el-form-item
+                            label="Asignaturas"
+                            v-if="$page.component === 'Cursos'">
+                            <el-select
+                                v-model="form.asignaturas"
+                                multiple
+                                placeholder="Select"
+                            >
+                                <el-option
+                                    v-for="item in asignaturas"
+                                    :key="item.id"
+                                    :label="item.nombre"
+                                    :value="item.id"
+                                />
+                            </el-select>
+                        </el-form-item>
                     </div>
                     <el-button v-if="action === 'edit'" type="primary" @click="submit(form)">Editar</el-button>
                     <el-button v-if="action === 'add'" type="primary" @click="submit(form)">Añadir</el-button>
@@ -94,10 +110,11 @@ const props = defineProps({
     isVisible: Boolean,
     data: Object,
     action: String,
-    route: String
+    route: String,
+    asignaturas: Object
 });
 
-const form = ref({})
+const form = ref({});
 watch(() => props.data, (newValue) => {
     form.value = {...newValue};
 });
@@ -199,12 +216,5 @@ const notification = (title, message, type) => {
     border-top: 1px solid #ddd;
     padding-top: 10px;
     text-align: right;
-}
-
-.close-button {
-    background: none;
-    border: none;
-    font-size: 1.5em;
-    cursor: pointer;
 }
 </style>

@@ -18,7 +18,7 @@
             </template>
         </el-table-column>
     </el-table>
-    <Form :isVisible="showDialog" :data="row" :route="route" :action='action'>
+    <Form :isVisible="showDialog" :data="row" :asignaturas="asignaturas" :route="route" :action='action'>
         <template #footer>
             <button @click="showDialog = false">Cerrar</button>
         </template>
@@ -34,7 +34,8 @@ import {ElNotification, ElMessage, ElMessageBox} from "element-plus";
 
 const props = defineProps({
     data: Object,
-    route: String
+    route: String,
+    asignaturas: Object
 })
 
 let row = ref({})

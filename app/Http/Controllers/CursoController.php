@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Asignatura;
+use App\Models\Curso_Profesor_Asignatura;
 use Exception;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -15,7 +17,7 @@ class CursoController extends Controller
      * Insert
      *
      * Takes the data sent from the form and create a new course
-     * 
+     *
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function insert()
@@ -28,7 +30,8 @@ class CursoController extends Controller
 
         //With the validated data, we try to create the new course
         try{
-         Curso::create($datos);
+         $curso = Curso::create($datos);
+         $curso->asignaturas()->attach(request()->asignaturas);
             //If an error occurs, we send the exception
         } catch (\Illuminate\Database\QueryException $exception) {
             // You can check get the details of the error using `errorInfo`:
@@ -52,25 +55,31 @@ class CursoController extends Controller
      * Search
      *
      * Sends the list of courses found in the database
-     * 
+     *
      * @return \Inertia\Response List of courses
      */
     public function search(){
+        $asignaturas = Asignatura::all();
         //Obtain all the courses
-        $cursos = Curso::all();
+        $cursos = Curso::with('asignaturas')->get();
         if(empty($cursos['items'])){
             $ret=[];
             //Return only what's important
             foreach($cursos as $curso){
-                $ret[]=['id'=>$curso['id'],'nombre'=>$curso['nombre'],'cod'=>$curso['cod']];
+                $cursoAsignaturas = [];
+                foreach ($curso['asignaturas'] as $asignatura){
+                    $cursoAsignaturas[] = $asignatura['id'];
+                }
+                $ret[]=['id'=>$curso['id'],'nombre'=>$curso['nombre'],'cod'=>$curso['cod'],'asignaturas' => $cursoAsignaturas];
             }
         }else{
             $ret=false;
         }
         return Inertia::render('Cursos',[
-            'cursos'=>$ret
+            'cursos'=>$ret,
+            'asignaturas' => $asignaturas
         ]);
-    
+
     }
     /*
     public function searchById(int $id){
@@ -83,7 +92,7 @@ class CursoController extends Controller
      * Update
      *
      * Takes the data sent from the form and updates a course
-     * 
+     *
      * @param  mixed $id
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
@@ -105,7 +114,13 @@ class CursoController extends Controller
             dd("Los datos son iguales");
         }else{
             try{
-                Curso::find($id)->update($datos);
+                $curso = Curso::find($id);
+                $curso->update($datos);
+                $curso->asignaturas()->sync(request()->asignaturas);
+                $detachedSubjects = $curso->asignaturas()->whereNotIn('asignatura_id', request()->asignaturas)->get();
+                Curso_Profesor_Asignatura::where('curso_id', $curso->id)
+                    ->whereNotIn('asignatura_id', request()->asignaturas)
+                    ->delete();
             } catch (\Illuminate\Database\QueryException $exception) {
                 // You can check get the details of the error using `errorInfo`:
                 $errorInfo = $exception->errorInfo;
@@ -118,7 +133,7 @@ class CursoController extends Controller
 
     /**
      * Delete
-     * 
+     *
      * Delete a course
      *
      * @param  mixed $id
