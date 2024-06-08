@@ -10,7 +10,7 @@
                         <el-table-column prop="horas" label="Horas"></el-table-column>
                         <el-table-column>
                             <template #default="nestedScope">
-                                <el-button type="warning" @click="console.log(nestedScope.row.id)">Eliminar</el-button>
+                                <el-button type="warning" @click="handleDelete(nestedScope.row.id)">Eliminar</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -111,17 +111,8 @@ const submit = (id) => {
 const handleDelete = (id) => {
     router.delete(`/desasignarAsignatura/${id}`,
         {
-            preserveState: "errors",
             onSuccess: () => {
                 notification('Información', 'Se ha eliminado la asignación de la asignatura', 'info')
-            },
-            onError: (errorBag) => {
-                for (const key in errors) {
-                    errors[key] = null;
-                }
-                for (const key in errorBag) {
-                    errors[key] = errorBag[key]; // Mostrar solo el primer error
-                }
             }
         });
 };

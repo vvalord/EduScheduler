@@ -6,6 +6,7 @@ use App\Http\Controllers\CursoController;
 use App\Http\Controllers\ProfesorController;
 use App\Models\Asignatura;
 use App\Models\Curso;
+use App\Models\Curso_Profesor_Asignatura;
 use Illuminate\Http\Request;
 use App\Models\Profesor;
 use Illuminate\Support\Facades\Route;
@@ -151,5 +152,11 @@ Route::post('/asignarAsignatura', function () {
         'curso_id' => $curso,
         'horas'=> $horas
     ]);
+    return redirect('/');
+});
+
+Route::delete('desasignarAsignatura/{id}', function ($id) {
+    $asignacion = Curso_Profesor_Asignatura::find($id);
+    $asignacion->delete();
     return redirect('/');
 });
