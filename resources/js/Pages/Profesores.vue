@@ -20,6 +20,7 @@ import {ref} from "vue";
 const props = defineProps({
     profesores: Object
 })
+console.log(props.profesores);
 const name = '/profesores';
 const action = ref('add')
 let showDialog = ref(false);

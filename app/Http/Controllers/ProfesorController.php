@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Asignacion_Cargo;
+use App\Models\Curso_Profesor_Asignatura;
 use Exception;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -24,7 +25,7 @@ class ProfesorController extends Controller
         if (request()['cargo_id']){
             $datosAsignacion=request()->validate([
                 'cargo_id' => ['required'],
-                //'horas' => ['required'],
+                'horas' => ['required'],
                 'turno' => ['required']]);
 
         }
@@ -84,13 +85,20 @@ class ProfesorController extends Controller
             $ret=[];
             //Return only what's important
             foreach($profesores as $profesor){
+                $reduccion = Asignacion_Cargo::where('profesor_id', $profesor['id'])->get();
+                if (!isset($reduccion[0])){
+                    $reduccion = 0;
+                } else {
+                    $reduccion = $reduccion[0]['horas'];
+                }
+                $horasTotales = Curso_Profesor_Asignatura::where('profesor_id', $profesor['id'])->sum('horas') + $reduccion;
                 if($asignacion=Asignacion_Cargo::query()->where('profesor_id',$profesor['id'])->get()->first()){
                 $ret[]=['id'=>$profesor['id'],'nombre'=>$profesor['nombre'],'cod'=>$profesor['cod'],'email'=>$profesor['email'],'especialidad'=>$profesor['especialidad'],
                 'cargo_id'=>$asignacion->cargo_id,'turno'=>$asignacion->turno,
-                'departamento'=>$profesor['departamento'],'total_horas'=>$profesor['total_horas']];
+                'departamento'=>$profesor['departamento'],'total_horas'=>$horasTotales];
                 }else{
                     $ret[]=['id'=>$profesor['id'],'nombre'=>$profesor['nombre'],'cod'=>$profesor['cod'],'email'=>$profesor['email'],'especialidad'=>$profesor['especialidad'],
-                'departamento'=>$profesor['departamento'],'total_horas'=>$profesor['total_horas']];
+                'departamento'=>$profesor['departamento'],'total_horas'=>$horasTotales];
                 }
             }
         }else{
@@ -145,7 +153,7 @@ class ProfesorController extends Controller
         if(request()->validate(['cargo_id' => ['required']])){
             $datosAsignacion=request()->validate([
                 'cargo_id' => ['required'],
-                //'horas' => ['required'],
+                'horas' => ['required'],
                 'turno' => ['required']]);
 
                 if(!$asignacion=Asignacion_Cargo::where('profesor_id',$id)->get()->first()){

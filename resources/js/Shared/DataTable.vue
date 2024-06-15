@@ -8,6 +8,7 @@
         <el-table-column v-if="props.data[0].especialidad" label="Especialidad" prop="especialidad" />
         <el-table-column v-if="props.data[0].departamento" label="Departamento" prop="departamento" />
         <el-table-column v-if="props.data[0].horas" label="Horas" prop="horas" />
+        <el-table-column v-if="props.data[0].total_horas" label="Horas totales" prop="total_horas" />
         <el-table-column align="right">
             <template #header>
                 <el-input v-model="search" size="small" placeholder="Type to search" />

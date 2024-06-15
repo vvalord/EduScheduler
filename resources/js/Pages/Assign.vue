@@ -19,7 +19,8 @@
                     </el-button>
                 </template>
             </el-table-column>
-            <el-table-column prop="total" label="Total Horas" width="90"/>
+            <el-table-column prop="reduccion" label="Reducción por cargo" width="120" align="center"/>
+            <el-table-column prop="horasTotales" label="Total Horas" width="90" align="center"/>
         </el-table>
     </div>
     <el-dialog v-model="dialogFormVisible" title="Asignar asignatura" align-center>

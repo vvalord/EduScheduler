@@ -4,6 +4,7 @@ use App\Http\Controllers\AsignaturaController;
 use App\Http\Controllers\CargoController;
 use App\Http\Controllers\CursoController;
 use App\Http\Controllers\ProfesorController;
+use App\Models\Asignacion_Cargo;
 use App\Models\Asignatura;
 use App\Models\Curso;
 use App\Models\Curso_Profesor_Asignatura;
@@ -16,45 +17,31 @@ use Inertia\Inertia;
 Route::get('/', function () {
     //$profesores = Profesor::with(['asignaturasCursos.curso', 'asignaturasCursos.asignatura'])->get();
     $asignaturas = Asignatura::all();
-    $cursos = Curso::with('asignaturas')->get();;
-    $ret = [];
-    $i = 0;
-    /**foreach ($profesores as $profesor) {
-        $ret[$i] = [
-            'id' => $profesor->id,
-            'nombre' => $profesor->nombre,
-            'total' => $profesor->total_horas
-        ];
-        $cursos = [];
-        foreach ($profesor->asignaturasCursos as $relation) {
-            $cursoNombre = $relation->curso->cod;
-            if (!isset($cursos[$cursoNombre])) {
-                $cursos[$cursoNombre] = [];
-            }
-            $cursos[$cursoNombre][] = $relation->asignatura->cod;
-            $ret[$i]['asignaturas'][] = [
-                'curso' => $relation->curso->cod,
-                'asignatura' => $relation->asignatura->cod,
-                'horas' => 0
-            ];
-        }
-        $i++;
-    }
-    //dd($ret);*/
+    $cursos = Curso::with('asignaturas')->get();
     $teachers = Profesor::with(['asignaturasCursos.curso', 'asignaturasCursos.asignatura'])->get();
 
     $formattedTeachers = $teachers->map(function ($teacher) {
+        $reduccion = Asignacion_Cargo::where('profesor_id', $teacher->id)->get();
+        if (!isset($reduccion[0])){
+            $reduccion = 0;
+        } else {
+            $reduccion = $reduccion[0]['horas'];
+        }
+        $horasTotales = Curso_Profesor_Asignatura::where('profesor_id', $teacher->id)->sum('horas') + $reduccion;
+        //dd($reduccion);
         return [
             'id' => $teacher->id,
             'nombre' => $teacher->nombre,
-            'asignaturas' => $teacher->asignaturasCursos->map(function ($courseSubjectTeacher) {
+            'horasTotales' => $horasTotales,
+            'reduccion' => $reduccion,
+            'asignaturas' => $teacher->asignaturasCursos->map(function ($cursoAsignaturaProfesor) {
                 return [
-                    'id' => $courseSubjectTeacher->id,
-                    'curso_id' => $courseSubjectTeacher->curso->id,
-                    'curso' => $courseSubjectTeacher->curso->nombre,
-                    'asignatura_id' => $courseSubjectTeacher->asignatura->id,
-                    'asignatura' => $courseSubjectTeacher->asignatura->nombre,
-                    'horas' => $courseSubjectTeacher->horas
+                    'id' => $cursoAsignaturaProfesor->id,
+                    'curso_id' => $cursoAsignaturaProfesor->curso->id,
+                    'curso' => $cursoAsignaturaProfesor->curso->nombre,
+                    'asignatura_id' => $cursoAsignaturaProfesor->asignatura->id,
+                    'asignatura' => $cursoAsignaturaProfesor->asignatura->nombre,
+                    'horas' => $cursoAsignaturaProfesor->horas
                 ];
             })
         ];
