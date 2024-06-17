@@ -1,6 +1,6 @@
 <template>
-    <div style="max-width: 100%;">
-        <el-table :data="profesores" height="800" border>
+    <div style="max-width: 100%; margin: 1rem">
+        <el-table :data="profesores" max-height="800" border>
             <el-table-column prop="nombre" label="Nombre" width="90"/>
             <el-table-column label="Asignaturas">
                 <template #default="scope">
@@ -55,7 +55,7 @@
 
 <script setup>
 import {ref, computed, reactive} from 'vue';
-import {ElNotification} from 'element-plus';
+import {ElMessage, ElMessageBox, ElNotification} from 'element-plus';
 import {router} from "@inertiajs/vue3";
 
 const props = defineProps({
@@ -110,13 +110,30 @@ const submit = (id) => {
 };
 
 const handleDelete = (id) => {
-    router.delete(`/desasignarAsignatura/${id}`,
-        {
-            onSuccess: () => {
-                notification('Información', 'Se ha eliminado la asignación de la asignatura', 'info')
-            }
-        });
+    open(id)
 };
+
+const open = (row) => {
+    ElMessageBox.confirm('¿Seguro que quiere eliminar este registro?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+    })
+        .then(() => {
+            router.delete(`/desasignarAsignatura/${row}`,
+                {
+                    onSuccess: () => {
+                        notification('Información', 'Se ha eliminado la asignación de la asignatura', 'info')
+                    }
+                });
+        })
+        .catch(() => {
+            ElMessage({
+                type: 'info',
+                message: 'Delete canceled',
+            })
+        })
+}
 
 const notification = (title, message, type) => {
     ElNotification({

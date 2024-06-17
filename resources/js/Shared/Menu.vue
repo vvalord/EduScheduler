@@ -16,6 +16,9 @@
             <li class="menu__list__item">
                 <MenuLink href="/cargos" :active="$page.component === 'Cargos'">Cargos</MenuLink>
             </li>
+            <li class="menu__list__item">
+                <MenuLink href="/logout" style="background-color: #ee484e" method="post">Logout</MenuLink>
+            </li>
         </ul>
     </nav>
 </template>
