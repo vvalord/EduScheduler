@@ -2,11 +2,23 @@
     <div>
       <h1>Generar PDF con Vue.js</h1>
       <button @click="generatePDF">Generar PDF</button>
-      <div id="content" ref="content">
-        <h2>Título del Documento</h2>
-        <p>Este es el contenido que se incluirá en el PDF.</p>
-        <p>Este es otro párrafo de ejemplo para mostrar más contenido.</p>
+        <div id="content" ref="content" style="max-width: 100%; margin: 1rem">
+          <el-table :data="profesores" max-height="800" border>
+              <el-table-column prop="nombre" label="Nombre" width="90"/>
+              <el-table-column label="Asignaturas">
+                  <template #default="scope">
+                      <el-table :data="scope.row.asignaturas" border>
+                          <el-table-column prop="asignatura" label="Asignatura"></el-table-column>
+                          <el-table-column prop="curso" label="Curso"></el-table-column>
+                          <el-table-column prop="horas" label="Horas"></el-table-column>
+                      </el-table>
+                  </template>
+              </el-table-column>
+              <el-table-column prop="reduccion" label="Reducción por cargo" width="120" align="center"/>
+              <el-table-column prop="horasTotales" label="Total Horas" width="90" align="center"/>
+          </el-table>
       </div>
+
     </div>
   </template>
   
