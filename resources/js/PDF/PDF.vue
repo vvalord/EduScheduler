@@ -47,7 +47,7 @@
         doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
   
         // Guardar el PDF
-        doc.save('ejemplo.pdf');
+        doc.save('horario.pdf');
       }
     }
   }
