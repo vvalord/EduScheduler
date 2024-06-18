@@ -6,7 +6,13 @@ use App\Http\Controllers\CargoController;
 use App\Http\Controllers\CursoController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProfesorController;
+use App\Models\Asignacion_Cargo;
+use App\Models\Asignatura;
+use App\Models\Curso;
+use App\Models\Curso_Profesor_Asignatura;
+use App\Models\Profesor;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::middleware(['guest'])->group(function () {
 /////
@@ -29,6 +35,44 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/asignarAsignatura', [AssignController::class, 'insert']);
     Route::delete('desasignarAsignatura/{id}', [AssignController::class, 'delete']);
 
+Route::get('/pdf', function () {
+    //$profesores = Profesor::with(['asignaturasCursos.curso', 'asignaturasCursos.asignatura'])->get();
+    $asignaturas = Asignatura::all();
+    $cursos = Curso::with('asignaturas')->get();
+    $teachers = Profesor::with(['asignaturasCursos.curso', 'asignaturasCursos.asignatura'])->get();
+
+    $formattedTeachers = $teachers->map(function ($teacher) {
+        $reduccion = Asignacion_Cargo::where('profesor_id', $teacher->id)->get();
+        if (!isset($reduccion[0])){
+            $reduccion = 0;
+        } else {
+            $reduccion = $reduccion[0]['reduccion'];
+        }
+        $horasTotales = Curso_Profesor_Asignatura::where('profesor_id', $teacher->id)->sum('horas') + $reduccion;
+        //dd($reduccion);
+        return [
+            'id' => $teacher->id,
+            'nombre' => $teacher->nombre,
+            'horasTotales' => $horasTotales,
+            'reduccion' => $reduccion,
+            'asignaturas' => $teacher->asignaturasCursos->map(function ($cursoAsignaturaProfesor) {
+                return [
+                    'id' => $cursoAsignaturaProfesor->id,
+                    'curso_id' => $cursoAsignaturaProfesor->curso->id,
+                    'curso' => $cursoAsignaturaProfesor->curso->nombre,
+                    'asignatura_id' => $cursoAsignaturaProfesor->asignatura->id,
+                    'asignatura' => $cursoAsignaturaProfesor->asignatura->nombre,
+                    'horas' => $cursoAsignaturaProfesor->horas
+                ];
+            })
+        ];
+    });
+    return Inertia::render('PDF', [
+        'profesores' => $formattedTeachers,
+        'asignaturas' => $asignaturas,
+        'cursos' => $cursos
+    ]);
+});
 /////
 //PROFESORES
 /////

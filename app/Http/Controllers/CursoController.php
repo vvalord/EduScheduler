@@ -25,7 +25,7 @@ class CursoController extends Controller
         //We validate the data
         $datos = request()->validate([
             'nombre' => ['required'],
-            'cod' => ['required','max:5', Rule::unique('cursos', 'cod')]
+            'cod' => ['required','max:10', Rule::unique('cursos', 'cod')]
         ]);
 
         //With the validated data, we try to create the new course
@@ -100,7 +100,7 @@ class CursoController extends Controller
         try{
             $data = request()->validate([
                 'nombre' => ['required'],
-                'cod' => ['required','max:5', Rule::unique('cursos', 'cod')->ignore($id)],
+                'cod' => ['required','max:10', Rule::unique('cursos', 'cod')->ignore($id)],
             ]);
         }catch(Exception $exception){
             dd($exception);
@@ -108,11 +108,11 @@ class CursoController extends Controller
         $course=Curso::find($id);
 
         //Creamos una instancia que no se guarda en la base de datos
-        $newCourse=Curso::make($data);
+
         //Comprobamos si sus atributos son los mismos
-        if(Curso::equals($newCourse,$course)){
-            dd("Los datos son iguales");
-        }else{
+
+            //dd("Los datos son iguales");
+
             try{
                 $course = Curso::find($id);
                 $course->update($data);
@@ -127,7 +127,7 @@ class CursoController extends Controller
                 // Return the response to the client..
                 echo $errorInfo;
             }
-        }
+
         return redirect('/cursos');
     }
 

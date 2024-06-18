@@ -35,7 +35,7 @@ class AssignController extends Controller
                     return [
                         'id' => $cursoAsignaturaProfesor->id,
                         'curso_id' => $cursoAsignaturaProfesor->curso->id,
-                        'curso' => $cursoAsignaturaProfesor->curso->nombre,
+                        'curso' => $cursoAsignaturaProfesor->curso->cod,
                         'asignatura_id' => $cursoAsignaturaProfesor->asignatura->id,
                         'asignatura' => $cursoAsignaturaProfesor->asignatura->nombre,
                         'horas' => $cursoAsignaturaProfesor->horas
@@ -43,7 +43,7 @@ class AssignController extends Controller
                 })
             ];
         });
-        return Inertia::render('Assign', [
+        return Inertia::render('Home', [
             'profesores' => $formattedTeachers,
             'asignaturas' => $subjects,
             'cursos' => $courses
