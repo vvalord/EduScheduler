@@ -1,5 +1,5 @@
 <template>
-    <el-table :data="filterTableData" style="width: 100%; margin-top: 2rem" max-height="800">
+    <el-table :data="filterTableData" style="width: 100%; margin-top: 2rem" max-height="700">
         <el-table-column v-if="props.data[0].nombre" label="Nombre" prop="nombre" />
         <el-table-column v-if="props.data[0].cod" label="Clave" prop="cod" />
         <el-table-column v-if="props.data[0].cargo" label="Cargo" prop="cargo" />

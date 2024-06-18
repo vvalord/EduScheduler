@@ -59,25 +59,25 @@ class CursoController extends Controller
      * @return \Inertia\Response List of courses
      */
     public function search(){
-        $asignaturas = Asignatura::all();
+        $subjects = Asignatura::all();
         //Obtain all the courses
-        $cursos = Curso::with('asignaturas')->get();
-        if(empty($cursos['items'])){
+        $courses = Curso::with('asignaturas')->get();
+        if(empty($courses['items'])){
             $ret=[];
             //Return only what's important
-            foreach($cursos as $curso){
-                $cursoAsignaturas = [];
-                foreach ($curso['asignaturas'] as $asignatura){
-                    $cursoAsignaturas[] = $asignatura['id'];
+            foreach($courses as $course){
+                $courseSubject = [];
+                foreach ($course['asignaturas'] as $subject){
+                    $courseSubject[] = $subject['id'];
                 }
-                $ret[]=['id'=>$curso['id'],'nombre'=>$curso['nombre'],'cod'=>$curso['cod'],'asignaturas' => $cursoAsignaturas];
+                $ret[]=['id'=>$course['id'],'nombre'=>$course['nombre'],'cod'=>$course['cod'],'asignaturas' => $courseSubject];
             }
         }else{
             $ret=false;
         }
         return Inertia::render('Cursos',[
             'cursos'=>$ret,
-            'asignaturas' => $asignaturas
+            'asignaturas' => $subjects
         ]);
 
     }
@@ -98,27 +98,27 @@ class CursoController extends Controller
      */
     public function update(int $id){
         try{
-            $datos = request()->validate([
+            $data = request()->validate([
                 'nombre' => ['required'],
                 'cod' => ['required','max:5', Rule::unique('cursos', 'cod')->ignore($id)],
             ]);
         }catch(Exception $exception){
             dd($exception);
         }
-        $curso=Curso::find($id);
+        $course=Curso::find($id);
 
         //Creamos una instancia que no se guarda en la base de datos
-        $newCurso=Curso::make($datos);
+        $newCourse=Curso::make($data);
         //Comprobamos si sus atributos son los mismos
-        if(Curso::equals($newCurso,$curso)){
+        if(Curso::equals($newCourse,$course)){
             dd("Los datos son iguales");
         }else{
             try{
-                $curso = Curso::find($id);
-                $curso->update($datos);
-                $curso->asignaturas()->sync(request()->asignaturas);
-                $detachedSubjects = $curso->asignaturas()->whereNotIn('asignatura_id', request()->asignaturas)->get();
-                Curso_Profesor_Asignatura::where('curso_id', $curso->id)
+                $course = Curso::find($id);
+                $course->update($data);
+                $course->asignaturas()->sync(request()->asignaturas);
+                $detachedSubjects = $course->asignaturas()->whereNotIn('asignatura_id', request()->asignaturas)->get();
+                Curso_Profesor_Asignatura::where('curso_id', $course->id)
                     ->whereNotIn('asignatura_id', request()->asignaturas)
                     ->delete();
             } catch (\Illuminate\Database\QueryException $exception) {

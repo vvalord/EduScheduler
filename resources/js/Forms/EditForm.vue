@@ -47,10 +47,10 @@
                             </select>
                         </el-form-item>
                         <el-form-item
-                            label="Horas"
-                            :error="errors.horas"
+                            label="Reducción"
+                            :error="errors.reduccion"
                             v-if="$page.component === 'Profesores'">
-                            <el-input type="number" v-model="form.horas" name="horas" id="horas" :disabled="!form.cargo_id"/>
+                            <el-input type="number" v-model="form.reduccion" name="reduccion" id="reduccion" :disabled="!form.cargo_id"/>
                         </el-form-item>
                         <el-form-item
                             label="Turno"
@@ -127,6 +127,7 @@ let errors = reactive({
     turno: null,
     especialidad: null,
     horas: null,
+    reduccion: null,
     cargo: null
 });
 

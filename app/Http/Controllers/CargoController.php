@@ -22,13 +22,13 @@ class CargoController extends Controller
     {
         //dd(request());
         //We validate the data
-        $datos = request()->validate([
+        $data = request()->validate([
             'nombre' => ['required']
         ]);
 
         //With the validated data, we try to create the new position
         try {
-            Cargo::create($datos);
+            Cargo::create($data);
             //If an error occurs, we send the exception
         } catch (\Illuminate\Database\QueryException $exception) {
             // You can check get the details of the error using `errorInfo`:
@@ -122,7 +122,7 @@ class CargoController extends Controller
     public function update($id){
         //dd(request());
         try{
-            $datos = request()->validate([
+            $data = request()->validate([
                 'nombre' => ['required']
             ]);
         }catch(Exception $exception){
@@ -146,13 +146,13 @@ class CargoController extends Controller
 
         //Segundo metodo
         //Creamos una instancia que no se guarda en la base de datos
-        $newCargo=Cargo::make($datos);
+        $newCargo=Cargo::make($data);
         //Comprobamos si sus atributos son los mismos
         if(Cargo::equals($newCargo,$cargo)){
             dd("Los datos son iguales");
         }else{
             try{
-                Cargo::find($id)->update($datos);
+                Cargo::find($id)->update($data);
             } catch (\Illuminate\Database\QueryException $exception) {
                 // You can check get the details of the error using `errorInfo`:
                 $errorInfo = $exception->errorInfo;

@@ -22,26 +22,26 @@ class ProfesorController extends Controller
      */
     public function insert()
     {
-        if (request()['cargo_id']){
-            $datosAsignacion=request()->validate([
+        if (request()['cargo_id']) {
+            $assignment = request()->validate([
                 'cargo_id' => ['required'],
-                'horas' => ['required'],
+                'reduccion' => ['required'],
                 'turno' => ['required']]);
 
         }
         //We validate the data
-        $datos = request()->validate([
+        $data = request()->validate([
             'nombre' => ['required'],
-            'email' => ['required', 'min:5','max:50', 'email', Rule::unique('profesores', 'email')],
-            'cod' => ['required','max:5', Rule::unique('profesores', 'cod')],
+            'email' => ['required', 'min:5', 'max:50', 'email', Rule::unique('profesores', 'email')],
+            'cod' => ['required', 'max:5', Rule::unique('profesores', 'cod')],
             'especialidad' => ['required'],
             'departamento' => ['required']
         ]);
-        $datos['total_horas']=0;
+        $data['total_horas'] = 0;
 
         //With the validated data, we try to create the new teacher
         try {
-             $profesor=Profesor::create($datos);
+            $teacher = Profesor::create($data);
         } catch (\Illuminate\Database\QueryException $exception) {
             // You can check get the details of the error using `errorInfo`:
             $errorInfo = $exception->errorInfo;
@@ -50,10 +50,10 @@ class ProfesorController extends Controller
             echo $errorInfo;
         }
 
-        if(isset($datosAsignacion)){
-            $datosAsignacion['profesor_id']=$profesor['id'];
+        if (isset($assignment)) {
+            $assignment['profesor_id'] = $teacher['id'];
             try {
-                Asignacion_Cargo::create($datosAsignacion);
+                Asignacion_Cargo::create($assignment);
             } catch (\Illuminate\Database\QueryException $exception) {
                 dd("error");
             }
@@ -78,34 +78,35 @@ class ProfesorController extends Controller
      *
      * @return \Inertia\Response List of teachers
      */
-    public function search(){
+    public function search()
+    {
         //Obtain all the teachers
-        $profesores = Profesor::all();
-        if(empty($profesores['items'])){
-            $ret=[];
+        $teachers = Profesor::all();
+        if (empty($teachers['items'])) {
+            $ret = [];
             //Return only what's important
-            foreach($profesores as $profesor){
-                $reduccion = Asignacion_Cargo::where('profesor_id', $profesor['id'])->get();
-                if (!isset($reduccion[0])){
-                    $reduccion = 0;
+            foreach ($teachers as $teacher) {
+                $reduction = Asignacion_Cargo::where('profesor_id', $teacher['id'])->get();
+                if (!isset($reduction[0])) {
+                    $reduction = 0;
                 } else {
-                    $reduccion = $reduccion[0]['horas'];
+                    $reduction = $reduction[0]['reduccion'];
                 }
-                $horasTotales = Curso_Profesor_Asignatura::where('profesor_id', $profesor['id'])->sum('horas') + $reduccion;
-                if($asignacion=Asignacion_Cargo::query()->where('profesor_id',$profesor['id'])->get()->first()){
-                $ret[]=['id'=>$profesor['id'],'nombre'=>$profesor['nombre'],'cod'=>$profesor['cod'],'email'=>$profesor['email'],'especialidad'=>$profesor['especialidad'],
-                'cargo_id'=>$asignacion->cargo_id,'turno'=>$asignacion->turno,
-                'departamento'=>$profesor['departamento'],'total_horas'=>$horasTotales];
-                }else{
-                    $ret[]=['id'=>$profesor['id'],'nombre'=>$profesor['nombre'],'cod'=>$profesor['cod'],'email'=>$profesor['email'],'especialidad'=>$profesor['especialidad'],
-                'departamento'=>$profesor['departamento'],'total_horas'=>$horasTotales];
+                $totalHours = Curso_Profesor_Asignatura::where('profesor_id', $teacher['id'])->sum('horas') + $reduction;
+                if ($assignment = Asignacion_Cargo::query()->where('profesor_id', $teacher['id'])->get()->first()) {
+                    $ret[] = ['id' => $teacher['id'], 'nombre' => $teacher['nombre'], 'cod' => $teacher['cod'], 'email' => $teacher['email'], 'especialidad' => $teacher['especialidad'],
+                        'cargo_id' => $assignment->cargo_id, 'turno' => $assignment->turno, 'reduccion' => $assignment->reduccion,
+                        'departamento' => $teacher['departamento'], 'total_horas' => $totalHours];
+                } else {
+                    $ret[] = ['id' => $teacher['id'], 'nombre' => $teacher['nombre'], 'cod' => $teacher['cod'], 'email' => $teacher['email'], 'especialidad' => $teacher['especialidad'],
+                        'departamento' => $teacher['departamento'], 'total_horas' => $totalHours];
                 }
             }
-        }else{
-            $ret=false;
+        } else {
+            $ret = false;
         }
-        return Inertia::render('Profesores',[
-            'profesores'=>$ret
+        return Inertia::render('Profesores', [
+            'profesores' => $ret
         ]);
     }
     /*
@@ -119,29 +120,38 @@ class ProfesorController extends Controller
      *
      * Takes the data sent from the form and updates a teacher
      *
-     * @param  mixed $id
+     * @param mixed $id
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
-     */public function update(int $id){
-        try{
-            $datos = request()->validate([
+     */
+    public function update(int $id)
+    {
+        try {
+            if (request()['cargo_id']) {
+                $assignment = request()->validate([
+                    'cargo_id' => ['required'],
+                    'reduccion' => ['required'],
+                    'turno' => ['required']]);
+
+            }
+            $data = request()->validate([
                 'nombre' => ['required'],
-                'cod' => ['required','max:5', Rule::unique('profesores', 'cod')->ignore($id)],
-                'email' => ['required','min:5','max:50', Rule::unique('profesores', 'email')->ignore($id)],
+                'cod' => ['required', 'max:5', Rule::unique('profesores', 'cod')->ignore($id)],
+                'email' => ['required', 'min:5', 'max:50', Rule::unique('profesores', 'email')->ignore($id)],
                 'especialidad' => ['required'],
                 'departamento' => ['required']
             ]);
-        }catch(Exception $exception){
+        } catch (Exception $exception) {
             dd($exception);
         }
-        $prof=Profesor::find($id);
+        $teacher = Profesor::find($id);
 
         //Creamos una instancia que no se guarda en la base de datos
-        $newProf=Profesor::make($datos);
+        $newTeacher = Profesor::make($data);
         //Comprobamos si sus atributos son los mismos
-        if(!Profesor::equals($newProf,$prof)){
+        if (!Profesor::equals($newTeacher, $teacher)) {
 
-            try{
-                Profesor::find($id)->update($datos);
+            try {
+                Profesor::find($id)->update($data);
             } catch (\Illuminate\Database\QueryException $exception) {
                 // You can check get the details of the error using `errorInfo`:
                 $errorInfo = $exception->errorInfo;
@@ -150,30 +160,26 @@ class ProfesorController extends Controller
             }
         }
 
-        if(request()->validate(['cargo_id' => ['required']])){
-            $datosAsignacion=request()->validate([
-                'cargo_id' => ['required'],
-                'horas' => ['required'],
-                'turno' => ['required']]);
+        if (isset($assignment)) {
 
-                if(!$asignacion=Asignacion_Cargo::where('profesor_id',$id)->get()->first()){
-                    $datosAsignacion['profesor_id']=$id;
-                    try {
-                        Asignacion_Cargo::create($datosAsignacion);
-                    } catch (\Illuminate\Database\QueryException $exception) {
-                        dd("error");
-                    }
-                } else {
-                    $datosAsignacion['profesor_id'] = $id;
-                    $newAsignacion = Asignacion_Cargo::make($datosAsignacion);
-                    if (!Asignacion_Cargo::equals($asignacion, $newAsignacion)) {
-                        try {
-                            Asignacion_Cargo::query()->where('profesor_id', $id)->get()->first()->update($datosAsignacion);
-                        } catch (\Illuminate\Database\QueryException $exception) {
-                            dd("error");
-                        }
-                    }
+            if (!$asignacion = Asignacion_Cargo::where('profesor_id', $id)->get()->first()) {
+                $assignment['profesor_id'] = $id;
+                try {
+                    Asignacion_Cargo::create($assignment);
+                } catch (\Illuminate\Database\QueryException $exception) {
+                    dd("error");
                 }
+            } else {
+                $assignment['profesor_id'] = $id;
+                //dd($assignment);
+                //$newAssignment = Asignacion_Cargo::make($assignment);
+                try {
+                    Asignacion_Cargo::query()->where('profesor_id', $id)->get()->first()->update($assignment);
+                } catch (\Illuminate\Database\QueryException $exception) {
+                    dd("error");
+                }
+
+            }
         }
         return redirect('/profesores');
     }
@@ -183,11 +189,12 @@ class ProfesorController extends Controller
      *
      * Delete a teacher
      *
-     * @param  mixed $id
+     * @param mixed $id
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function delete(int $id){
-        try{
+    public function delete(int $id)
+    {
+        try {
             Profesor::find($id)->delete();
         } catch (\Illuminate\Database\QueryException $exception) {
             // You can check get the details of the error using `errorInfo`:

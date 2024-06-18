@@ -28,7 +28,7 @@
             <el-form-item label="Curso" :error="errors.cursoId">
                 <!-- El-select para elegir el curso -->
                 <el-select v-model="selectedCourse" placeholder="Selecciona un curso" @change="onCourseChange">
-                    <el-option v-for="curso in cursos" :key="curso.id" :label="curso.nombre"
+                    <el-option v-for="curso in cursos" :key="curso.id" :label="curso.cod"
                                :value="curso.id"></el-option>
                 </el-select>
             </el-form-item>

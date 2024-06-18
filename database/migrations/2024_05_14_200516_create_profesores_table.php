@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('especialidad');
             $table->string('departamento'); // no sabemos el departamento hasta que se asigna?
-            $table->integer('total_horas');
+            $table->integer('total_horas')->nullable();
             $table->timestamps();
         });
     }

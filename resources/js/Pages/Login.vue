@@ -5,8 +5,8 @@
         </el-header>
         <el-main>
             <el-form :model="form" ref="loginForm" label-width="100px">
-                <el-form-item label="Username" prop="username" :error="errors.email">
-                    <el-input v-model="form.email"></el-input>
+                <el-form-item label="Username" prop="username" :error="errors.name">
+                    <el-input v-model="form.name"></el-input>
                 </el-form-item>
                 <el-form-item label="Password" prop="password" :error="errors.password">
                     <el-input type="password" v-model="form.password"></el-input>
@@ -24,12 +24,12 @@ import {reactive} from "vue";
 import {router} from "@inertiajs/vue3";
 
 const form = reactive({
-    email: null,
+    name: null,
     password: null
 });
 
 const errors = reactive({
-    nombre: null,
+    name: null,
     email: null,
     password: null
 });
