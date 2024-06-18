@@ -16,9 +16,10 @@ return new class extends Migration
             $table->unsignedBigInteger('profesor_id');
             $table->unsignedBigInteger('cargo_id');
             $table->enum('turno',['mañana', 'tarde']);
+            $table->integer('reduccion');
             $table->timestamps();
 
-            $table-> foreign('profesor_id')->references('id')->on('profesor')->onDelete('cascade');
+            $table-> foreign('profesor_id')->references('id')->on('profesores')->onDelete('cascade');
             $table-> foreign('cargo_id')->references('id')->on('cargos')->onDelete('cascade');
         });
     }

@@ -4,36 +4,85 @@
         <div v-if="isVisible" class="dialog-overlay">
             <div class="dialog">
                 <h2>{{ $page.component }}</h2>
-                <form @submit.prevent="submit" method="POST">
+                <form @submit.prevent="submit">
                     <div class="dialog-form">
-                        <div
+                        <el-form-item
+                            label="Nombre"
+                            :error="errors.nombre"
                             v-if="$page.component === 'Profesores'||$page.component === 'Cargos' || $page.component === 'Asignaturas'||$page.component === 'Cursos'">
-                            <label for="nombre">Nombre:</label>
-                            <el-input type="text" v-model="form.nombre" name="nombre" id="nombre" maxlength="30"/>
-                        </div>
-                        <div
+                            <el-input type="text" v-model="form.nombre" name="nombre" id="nombre" maxlength="70"/>
+                        </el-form-item>
+                        <el-form-item
+                            label="Clave"
+                            :error="errors.cod"
                             v-if="$page.component === 'Profesores' || $page.component === 'Asignaturas'||$page.component === 'Cursos'">
-                            <label for="cod">Clave:</label>
                             <el-input type="text" v-model="form.cod" name="cod" id="cod" maxlength="30"/>
-                        </div>
-                        <div v-if="$page.component === 'Profesores'">
-                            <label for="email">Email:</label>
+                        </el-form-item>
+                        <el-form-item
+                            label="Email"
+                            :error="errors.email"
+                            v-if="$page.component === 'Profesores'">
                             <el-input type="text" v-model="form.email" name="email" id="email" maxlength="30"/>
-                        </div>
-                        <div v-if="$page.component === 'Profesores'">
-                            <label for="especialidad">Especialidad:</label>
+                        </el-form-item>
+                        <el-form-item
+                            label="Especialidad"
+                            :error="errors.especialidad"
+                            v-if="$page.component === 'Profesores'">
                             <el-input type="text" v-model="form.especialidad" name="especialidad" id="especialidad"
                                       maxlength="30"/>
-                        </div>
-                        <div v-if="$page.component === 'Profesores'">
-                            <label for="departamento">Departamento:</label>
+                        </el-form-item>
+                        <el-form-item
+                            label="Departamento"
+                            :error="errors.departamento"
+                            v-if="$page.component === 'Profesores'">
                             <el-input type="text" v-model="form.departamento" name="departamento" id="departamento"
                                       maxlength="30"/>
-                        </div>
-                        <div v-if="$page.component === 'Asignaturas'">
-                            <label for="horas">Horas:</label>
-                            <el-input type="number" v-model="form.horas" name="horas" id="horas" maxlength="30"/>
-                        </div>
+                        </el-form-item>
+                        <el-form-item
+                            label="Cargo"
+                            :error="errors.cargo"
+                            v-if="$page.component === 'Profesores'">
+                            <select v-model="form.cargo_id" name="cargo" id="cargo">
+                                <option v-for="cargo in cargos.data" :key="cargo.id" :value="cargo.id">{{ cargo.nombre }}</option>
+                            </select>
+                        </el-form-item>
+                        <el-form-item
+                            label="Reducción"
+                            :error="errors.reduccion"
+                            v-if="$page.component === 'Profesores'">
+                            <el-input type="number" v-model="form.reduccion" name="reduccion" id="reduccion" :disabled="!form.cargo_id"/>
+                        </el-form-item>
+                        <el-form-item
+                            label="Turno"
+                            :error="errors.turno"
+                            v-if="$page.component === 'Profesores'">
+                            <el-select v-model="form.turno" name="horario" id="horario" :disabled="!form.cargo_id">
+                                <el-option value="mañana">Mañana</el-option>
+                                <el-option value="tarde">Tarde</el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item
+                            label="Horas"
+                            :error="errors.horas"
+                            v-if="$page.component === 'Asignaturas'">
+                            <el-input type="number" v-model="form.horas" name="horas" id="horas" max="10" min="1"/>
+                        </el-form-item>
+                        <el-form-item
+                            label="Asignaturas"
+                            v-if="$page.component === 'Cursos'">
+                            <el-select
+                                v-model="form.asignaturas"
+                                multiple
+                                placeholder="Select"
+                            >
+                                <el-option
+                                    v-for="item in asignaturas"
+                                    :key="item.id"
+                                    :label="item.nombre"
+                                    :value="item.id"
+                                />
+                            </el-select>
+                        </el-form-item>
                     </div>
                     <el-button v-if="action === 'edit'" type="primary" @click="submit(form)">Editar</el-button>
                     <el-button v-if="action === 'add'" type="primary" @click="submit(form)">Añadir</el-button>
@@ -49,36 +98,92 @@
 </template>
 
 <script setup>
-import {ref, watch} from 'vue'
+import {ref, watch, onMounted, reactive } from 'vue'
 import {router} from "@inertiajs/vue3";
+import { ElNotification } from 'element-plus'
+import axios from 'axios';
+
+let cargos=ref();
+
 
 const props = defineProps({
     isVisible: Boolean,
     data: Object,
     action: String,
-    route: String
-})
+    route: String,
+    asignaturas: Object
+});
 
-const form = ref({})
+const form = ref({});
 watch(() => props.data, (newValue) => {
     form.value = {...newValue};
+});
+
+let errors = reactive({
+    nombre: null,
+    cod: null,
+    email: null,
+    departamento: null,
+    turno: null,
+    especialidad: null,
+    horas: null,
+    reduccion: null,
+    cargo: null
 });
 
 const submit = (form) => {
     if (props.action === 'edit') {
         router.put(`${props.route}/${props.data.id}`, form, {
-            preserveState: "errors"
-        })
+            preserveState: "errors",
+            onSuccess: () => {
+                notification('Info', 'Se ha actualizado el registro correctamente', 'info')
+            },
+            onError: (errorBag) => {
+                for (const key in errors) {
+                    errors[key] = null;
+                }
+                for (const key in errorBag) {
+                    errors[key] = errorBag[key]; // Mostrar solo el primer error
+                }
+            }
+        });
+        console.log(form.cargo)
     } else if (props.action === 'add') {
         router.post(props.route, form, {
-            preserveState: "errors"
+            preserveState: "errors",
+            onSuccess: () => {
+                notification('Success', 'Se ha creado el registro correctamente', 'success')
+            },
+            onError: (errorBag) => {
+                for (const key in errors) {
+                    errors[key] = null;
+                }
+                for (const key in errorBag) {
+                    errors[key] = errorBag[key]; // Mostrar solo el primer error
+                }
+            }
         })
     }
+};
+onMounted(() => {
+    axios
+      .get('/cargosAll')
+      .then(response => (cargos = response));
+
+});
+
+const notification = (title, message, type) => {
+    ElNotification({
+        title: title,
+        message: message,
+        type: type,
+    })
 }
 
 </script>
 
 <style scoped>
+
 .dialog-overlay {
     position: fixed;
     top: 0;
@@ -112,12 +217,5 @@ const submit = (form) => {
     border-top: 1px solid #ddd;
     padding-top: 10px;
     text-align: right;
-}
-
-.close-button {
-    background: none;
-    border: none;
-    font-size: 1.5em;
-    cursor: pointer;
 }
 </style>

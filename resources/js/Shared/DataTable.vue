@@ -1,5 +1,5 @@
 <template>
-    <el-table :data="filterTableData" style="width: 100%; margin-top: 2rem">
+    <el-table :data="filterTableData" style="width: 100%; margin-top: 2rem" max-height="700">
         <el-table-column v-if="props.data[0].nombre" label="Nombre" prop="nombre" />
         <el-table-column v-if="props.data[0].cod" label="Clave" prop="cod" />
         <el-table-column v-if="props.data[0].cargo" label="Cargo" prop="cargo" />
@@ -8,6 +8,7 @@
         <el-table-column v-if="props.data[0].especialidad" label="Especialidad" prop="especialidad" />
         <el-table-column v-if="props.data[0].departamento" label="Departamento" prop="departamento" />
         <el-table-column v-if="props.data[0].horas" label="Horas" prop="horas" />
+        <el-table-column v-if="props.data[0].total_horas" label="Horas totales" prop="total_horas" />
         <el-table-column align="right">
             <template #header>
                 <el-input v-model="search" size="small" placeholder="Type to search" />
@@ -18,22 +19,24 @@
             </template>
         </el-table-column>
     </el-table>
-    <Form :isVisible="showDialog" :data="row" :route="route" :action='action'>
+    <Form :isVisible="showDialog" :data="row" :asignaturas="asignaturas" :route="route" :action='action'>
         <template #footer>
             <button @click="showDialog = false">Cerrar</button>
         </template>
     </Form>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { computed, ref } from 'vue'
 import Form from "../Forms/EditForm.vue"
 import {router} from "@inertiajs/vue3";
+import {ElNotification, ElMessage, ElMessageBox} from "element-plus";
 
 
 const props = defineProps({
     data: Object,
-    route: String
+    route: String,
+    asignaturas: Object
 })
 
 let row = ref({})
@@ -53,17 +56,38 @@ const handleEdit = (ScopeRow) => {
     showDialog.value = true;
 }
 const handleDelete = (row) => {
-    //const confirmed = await dialog.confirm(message)
-    if(confirm("Do you really want to delete?")){
-        // do the thing needing confirming
-
-        console.log(`${props.route}/${row.id}`)
-        router.delete(`${props.route}/${row.id}`, {
-            preserveState: "errors"
-        })
-    }
+    open(row)
 }
 
+const notification = (title, message, type) => {
+    ElNotification({
+        title: title,
+        message: message,
+        type: type,
+    })
+}
+
+const open = (row) => {
+    ElMessageBox.confirm('¿Seguro que quiere eliminar este registro?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+    })
+        .then(() => {
+            router.delete(`${props.route}/${row.id}`, {
+                preserveState: "errors",
+                onSuccess: () => {
+                    notification('Info', 'Se ha eliminado el registro correctamente', 'info')
+                }
+            })
+        })
+        .catch(() => {
+            ElMessage({
+                type: 'info',
+                message: 'Delete canceled',
+            })
+        })
+}
 
 
 </script>

@@ -1,5 +1,5 @@
 <template>
-    <Table :data="profesores" :route="name"/>
+    <Table v-if="profesores!=false" :data="profesores" :route="name"/>
     <Form :is-visible="showDialog" :route="name" :action='action'>
         <template #default>
             <div class="add-button">
@@ -20,7 +20,9 @@ import {ref} from "vue";
 const props = defineProps({
     profesores: Object
 })
+console.log(props.profesores);
 const name = '/profesores';
 const action = ref('add')
 let showDialog = ref(false);
+
 </script>

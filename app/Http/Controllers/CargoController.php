@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Asignacion_Cargo;
 use Exception;
 use Illuminate\Support\Str;
 use App\Models\Cargo;
@@ -9,25 +10,25 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class CargoController extends Controller
-{    
+{
     /**
      * Insert
      *
      * Takes the data sent from the form and create a new position
-     * 
+     *
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function insert()
     {
         //dd(request());
         //We validate the data
-        $datos = request()->validate([
+        $data = request()->validate([
             'nombre' => ['required']
         ]);
 
         //With the validated data, we try to create the new position
         try {
-            Cargo::create($datos);
+            Cargo::create($data);
             //If an error occurs, we send the exception
         } catch (\Illuminate\Database\QueryException $exception) {
             // You can check get the details of the error using `errorInfo`:
@@ -47,11 +48,27 @@ class CargoController extends Controller
         ]);
         return $cargos;
     }*/
+
+
+    public function searchAll(){
+        $cargos = Cargo::all();
+        $ret=[];
+        //Return only what's important
+        foreach($cargos as $cargo){
+            $ret[]=[
+                'id' => $cargo['id'],
+                'nombre'=>$cargo['nombre']
+            ];
+        }
+
+        return $ret;
+    }
+
     /**
      * Search
      *
      * Sends the list of positions found in the database
-     * 
+     *
      * @return \Inertia\Response List of positions
      */
     public function search(){
@@ -69,13 +86,17 @@ class CargoController extends Controller
 
         //Obtain all the positions
         $cargos = Cargo::all();
-        $ret=[];
-        //Return only what's important
-        foreach($cargos as $cargo){
-            $ret[]=[
-                'id' => $cargo['id'],
-                'nombre'=>$cargo['nombre']
-            ];
+        if(empty($cargos['items'])){
+            $ret=[];
+            //Return only what's important
+            foreach($cargos as $cargo){
+                $ret[]=[
+                    'id' => $cargo['id'],
+                    'nombre'=>$cargo['nombre']
+                ];
+            }
+        }else{
+            $ret=false;
         }
         return Inertia::render('Cargos',[
             'cargos'=>$ret
@@ -94,14 +115,14 @@ class CargoController extends Controller
      * Update
      *
      * Takes the data sent from the form and updates a position
-     * 
+     *
      * @param  mixed $id
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function update($id){
         //dd(request());
         try{
-            $datos = request()->validate([
+            $data = request()->validate([
                 'nombre' => ['required']
             ]);
         }catch(Exception $exception){
@@ -125,13 +146,13 @@ class CargoController extends Controller
 
         //Segundo metodo
         //Creamos una instancia que no se guarda en la base de datos
-        $newCargo=Cargo::make($datos);
+        $newCargo=Cargo::make($data);
         //Comprobamos si sus atributos son los mismos
         if(Cargo::equals($newCargo,$cargo)){
             dd("Los datos son iguales");
         }else{
             try{
-                Cargo::find($id)->update($datos);
+                Cargo::find($id)->update($data);
             } catch (\Illuminate\Database\QueryException $exception) {
                 // You can check get the details of the error using `errorInfo`:
                 $errorInfo = $exception->errorInfo;
@@ -139,14 +160,14 @@ class CargoController extends Controller
                 echo $errorInfo;
             }
         }
-    
+
         return redirect('/cargos');
 
     }
 
     /**
      * Delete
-     * 
+     *
      * Delete a position
      *
      * @param  mixed $id
@@ -156,6 +177,7 @@ class CargoController extends Controller
         //$deleted = DB::delete('delete from cargos where id=?',[1, $id]);
         //Cargo::query()->where('id',$id)->delete();
         try{
+            Asignacion_Cargo::query()->where('cargo_id',$id)->delete();
             Cargo::find($id)->delete();
         } catch (\Illuminate\Database\QueryException $exception) {
             // You can check get the details of the error using `errorInfo`:

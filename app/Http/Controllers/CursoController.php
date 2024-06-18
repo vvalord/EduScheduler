@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Asignatura;
+use App\Models\Curso_Profesor_Asignatura;
 use Exception;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -15,7 +17,7 @@ class CursoController extends Controller
      * Insert
      *
      * Takes the data sent from the form and create a new course
-     * 
+     *
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function insert()
@@ -28,7 +30,8 @@ class CursoController extends Controller
 
         //With the validated data, we try to create the new course
         try{
-         Curso::create($datos);
+         $curso = Curso::create($datos);
+         $curso->asignaturas()->attach(request()->asignaturas);
             //If an error occurs, we send the exception
         } catch (\Illuminate\Database\QueryException $exception) {
             // You can check get the details of the error using `errorInfo`:
@@ -52,20 +55,31 @@ class CursoController extends Controller
      * Search
      *
      * Sends the list of courses found in the database
-     * 
+     *
      * @return \Inertia\Response List of courses
      */
     public function search(){
+        $subjects = Asignatura::all();
         //Obtain all the courses
-        $cursos = Curso::all();
-        $ret=[];
-        //Return only what's important
-        foreach($cursos as $curso){
-            $ret[]=['id'=>$curso['id'],'nombre'=>$curso['nombre'],'cod'=>$curso['cod']];
+        $courses = Curso::with('asignaturas')->get();
+        if(empty($courses['items'])){
+            $ret=[];
+            //Return only what's important
+            foreach($courses as $course){
+                $courseSubject = [];
+                foreach ($course['asignaturas'] as $subject){
+                    $courseSubject[] = $subject['id'];
+                }
+                $ret[]=['id'=>$course['id'],'nombre'=>$course['nombre'],'cod'=>$course['cod'],'asignaturas' => $courseSubject];
+            }
+        }else{
+            $ret=false;
         }
         return Inertia::render('Cursos',[
-            'cursos'=>$ret
+            'cursos'=>$ret,
+            'asignaturas' => $subjects
         ]);
+
     }
     /*
     public function searchById(int $id){
@@ -78,29 +92,35 @@ class CursoController extends Controller
      * Update
      *
      * Takes the data sent from the form and updates a course
-     * 
+     *
      * @param  mixed $id
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function update(int $id){
         try{
-            $datos = request()->validate([
+            $data = request()->validate([
                 'nombre' => ['required'],
                 'cod' => ['required','max:5', Rule::unique('cursos', 'cod')->ignore($id)],
             ]);
         }catch(Exception $exception){
             dd($exception);
         }
-        $curso=Curso::find($id);
+        $course=Curso::find($id);
 
         //Creamos una instancia que no se guarda en la base de datos
-        $newCurso=Curso::make($datos);
+        $newCourse=Curso::make($data);
         //Comprobamos si sus atributos son los mismos
-        if(Curso::equals($newCurso,$curso)){
+        if(Curso::equals($newCourse,$course)){
             dd("Los datos son iguales");
         }else{
             try{
-                Curso::find($id)->update($datos);
+                $course = Curso::find($id);
+                $course->update($data);
+                $course->asignaturas()->sync(request()->asignaturas);
+                $detachedSubjects = $course->asignaturas()->whereNotIn('asignatura_id', request()->asignaturas)->get();
+                Curso_Profesor_Asignatura::where('curso_id', $course->id)
+                    ->whereNotIn('asignatura_id', request()->asignaturas)
+                    ->delete();
             } catch (\Illuminate\Database\QueryException $exception) {
                 // You can check get the details of the error using `errorInfo`:
                 $errorInfo = $exception->errorInfo;
@@ -113,7 +133,7 @@ class CursoController extends Controller
 
     /**
      * Delete
-     * 
+     *
      * Delete a course
      *
      * @param  mixed $id

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nombre');
             $table->string('cod')->unique();
-            $table->string('horas'); //preguntar si las horas pueden variar segun el curso
+            $table->integer('horas'); //preguntar si las horas pueden variar segun el curso
             $table->timestamps();
         });
     }
