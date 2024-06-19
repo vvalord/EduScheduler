@@ -55,7 +55,7 @@ class Curso extends Model
             $query->whereDoesntHave('teachers');
         }])->get()->filter(function ($course) {
             return $course->asignaturas->isNotEmpty();
-        });
+        })->values()->all();
     }
 
     public static function equals(Curso $curso1, Curso $curso2){
