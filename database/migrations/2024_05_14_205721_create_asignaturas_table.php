@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('asignaturas', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
-            $table->string('cod')->unique();
+            $table->string('cod');
             $table->integer('horas'); //preguntar si las horas pueden variar segun el curso
             $table->timestamps();
         });

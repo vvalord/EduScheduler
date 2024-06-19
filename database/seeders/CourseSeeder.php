@@ -26,5 +26,29 @@ class CourseSeeder extends Seeder
         ]);
         $asir2->asignaturas()->attach([7,8,9,10,11,12,13]);
 
+        $dam1 = Curso::create([
+            'nombre' => 'Desarrollo de Aplicaciones Multiplataforma',
+            'cod' => '1ºDAM'
+        ]);
+        $dam1->asignaturas()->attach([14,15,16,5,17,18]);
+
+        $dam2 = Curso::create([
+            'nombre' => 'Desarrollo de Aplicaciones Multiplataforma',
+            'cod' => '2ºDAM'
+        ]);
+        $dam2->asignaturas()->attach([19,20,21,22,23,12,24]);
+
+        $smr1 = Curso::create([
+            'nombre' => 'Sistemas Microinformáticos y Redes',
+            'cod' => '1ºSMR'
+        ]);
+        $smr1->asignaturas()->attach([25,26,27,28,29]);
+
+        $smr2 = Curso::create([
+            'nombre' => 'Sistemas Microinformáticos y Redes',
+            'cod' => '2ºSMR'
+        ]);
+        $smr2->asignaturas()->attach([30,31,32,33,12,34]);
+
     }
 }

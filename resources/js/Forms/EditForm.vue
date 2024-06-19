@@ -72,6 +72,7 @@
                             v-if="$page.component === 'Cursos'">
                             <el-select
                                 v-model="form.asignaturas"
+                                filterable
                                 multiple
                                 placeholder="Select"
                             >
@@ -147,7 +148,6 @@ const submit = (form) => {
                 }
             }
         });
-        console.log(form.cargo)
     } else if (props.action === 'add') {
         router.post(props.route, form, {
             preserveState: "errors",

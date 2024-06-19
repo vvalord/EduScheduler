@@ -27,8 +27,7 @@ const props = defineProps({
     profesores: Array,
     asignaturas: Object,
     cursos: Array
-})
-console.log(props.profesores)
+});
 </script>
   <script>
   import jsPDF from 'jspdf';

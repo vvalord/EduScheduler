@@ -15,9 +15,9 @@ class AssignController extends Controller
     public function create()
     {
         $subjects = Asignatura::all();
-        $courses = Curso::with('asignaturas')->get();
+        //$courses = Curso::with('asignaturas')->get();
         $teachers = Profesor::with(['asignaturasCursos.curso', 'asignaturasCursos.asignatura'])->get();
-
+        $unassignedSubjects = Curso::coursesWithUnassignedSubjects();
         $formattedTeachers = $teachers->map(function ($teacher) {
             $reduction = Asignacion_Cargo::where('profesor_id', $teacher->id)->get();
             if (!isset($reduction[0])){
@@ -46,7 +46,7 @@ class AssignController extends Controller
         return Inertia::render('Home', [
             'profesores' => $formattedTeachers,
             'asignaturas' => $subjects,
-            'cursos' => $courses
+            'cursos' => $unassignedSubjects
         ]);
     }
 

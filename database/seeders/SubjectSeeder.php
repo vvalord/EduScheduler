@@ -101,7 +101,7 @@ class SubjectSeeder extends Seeder
         //     1ºDAM
         //-----------------
         Asignatura::create([
-            'nombre' => 'Acceso a datos',
+            'nombre' => 'Sistemas informáticos',
             'cod' => 'SI',
             'horas' => 6
         ]);
@@ -178,6 +178,78 @@ class SubjectSeeder extends Seeder
         Asignatura::create([
             'nombre' => 'Tutoría 2º DAM',
             'cod' => 'TUT2DAM',
+            'horas' => 0
+        ]);
+
+        //-----------------
+        //     1ºSMR
+        //-----------------
+        Asignatura::create([
+            'nombre' => 'Montaje y mantenimiento de equipos',
+            'cod' => 'MME',
+            'horas' => 7
+        ]);
+
+        Asignatura::create([
+            'nombre' => 'Sistemas operativos monopuesto',
+            'cod' => 'SOM',
+            'horas' => 5
+        ]);
+
+        Asignatura::create([
+            'nombre' => 'Aplicaciones ofimáticas',
+            'cod' => 'AOM',
+            'horas' => 8
+        ]);
+
+        Asignatura::create([
+            'nombre' => 'Redes Locales',
+            'cod' => 'RL',
+            'horas' => 7
+        ]);
+
+        Asignatura::create([
+            'nombre' => 'Tutoría 1º SMR',
+            'cod' => 'TUT1SMR',
+            'horas' => 0
+        ]);
+
+        //-----------------
+        //     2ºSMR
+        //-----------------
+        Asignatura::create([
+            'nombre' => 'Sistemas Operativos en red',
+            'cod' => 'SOR',
+            'horas' => 7
+        ]);
+
+        Asignatura::create([
+            'nombre' => 'Servicios en red',
+            'cod' => 'SR',
+            'horas' => 7
+        ]);
+
+        Asignatura::create([
+            'nombre' => 'Seguridad informática',
+            'cod' => 'SI',
+            'horas' => 5
+        ]);
+
+        Asignatura::create([
+            'nombre' => 'Aplicaciones web',
+            'cod' => 'AW',
+            'horas' => 4
+        ]);
+
+        /*Asignatura::create([
+            'nombre' => 'Horas de Libre configuración',
+            'cod' => 'HLC',
+            'horas' => 4
+        ]);*/
+
+        Asignatura::create([
+            'nombre' => 'Tutoría 2º SMR',
+            'cod' => 'TUT2SMR',
             'horas' => 0
         ]);
 
