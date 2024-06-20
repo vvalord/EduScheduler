@@ -44,7 +44,9 @@ const props = defineProps({
         const imgData = canvas.toDataURL('image/png');
 
         // Crear un nuevo documento PDF
-        const doc = new jsPDF();
+        const doc = new jsPDF({
+            orientation: 'landscape'
+        });
 
         // Agregar la imagen al PDF
         const imgProps = doc.getImageProperties(imgData);
