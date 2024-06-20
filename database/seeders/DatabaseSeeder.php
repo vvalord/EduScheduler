@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->create([
             'name' => 'admin',
-            'email' => 'admin@a',
+            'email' => 'admin@email',
             'password' => bcrypt('123')
         ]);
 
@@ -32,7 +32,8 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             SubjectSeeder::class,
-            CourseSeeder::class
+            CourseSeeder::class,
+            PositionSeeder::class
         ]);
     }
 }

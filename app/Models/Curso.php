@@ -49,6 +49,15 @@ class Curso extends Model
             ->withPivot('asignatura_id');
     }
 
+    public static function coursesWithUnassignedSubjects()
+    {
+        return self::with(['asignaturas' => function ($query) {
+            $query->whereDoesntHave('teachers');
+        }])->get()->filter(function ($course) {
+            return $course->asignaturas->isNotEmpty();
+        })->values()->all();
+    }
+
     public static function equals(Curso $curso1, Curso $curso2){
         $equal=true;
 

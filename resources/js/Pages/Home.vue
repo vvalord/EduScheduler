@@ -1,6 +1,6 @@
 <template>
     <div style="max-width: 100%; margin: 1rem">
-        <el-table :data="profesores" max-height="800" border>
+        <el-table :data="profesores" max-height="700" border>
             <el-table-column prop="nombre" label="Nombre" width="90"/>
             <el-table-column label="Asignaturas">
                 <template #default="scope">
@@ -27,7 +27,7 @@
         <el-form>
             <el-form-item label="Curso" :error="errors.cursoId">
                 <!-- El-select para elegir el curso -->
-                <el-select v-model="selectedCourse" placeholder="Selecciona un curso" @change="onCourseChange">
+                <el-select v-model="selectedCourse" placeholder="Selecciona un curso" @change="onCourseChange" filterable>
                     <el-option v-for="curso in cursos" :key="curso.id" :label="curso.cod"
                                :value="curso.id"></el-option>
                 </el-select>
@@ -35,13 +35,13 @@
             <el-form-item label="Asignatura" :error="errors.asignaturaId">
                 <!-- El-select para elegir la asignatura -->
                 <el-select v-model="selectedSubject" placeholder="Selecciona una asignatura"
-                           :disabled="!selectedCourse">
+                           :disabled="!selectedCourse" filterable>
                     <el-option v-for="asignatura in selectedCourseSubjects" :key="asignatura.id"
                                :label="asignatura.nombre" :value="asignatura.id"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="Horas" :error="errors.horas">
-                <el-input-number label="Horas" v-model="horas"/>
+                <el-input-number aria-label="Horas" v-model="horas"/>
             </el-form-item>
         </el-form>
         <div class="dialog-footer">
@@ -64,7 +64,6 @@ const props = defineProps({
     asignaturas: Object,
     cursos: Array
 });
-console.log(props.profesores);
 const dialogFormVisible = ref(false);
 const selectedRow = ref({});
 
@@ -83,7 +82,6 @@ const onCourseChange = () => {
 
 const subjectDialog = (row) => {
     selectedRow.value = {...row};
-    console.log(props.cursos);
     dialogFormVisible.value = true;
 };
 
@@ -153,9 +151,6 @@ let errors = reactive({
     cursoId: null,
     horas: null
 });
-const totalHours = (subjects) => {
-    return subjects.reduce((total, subject) => total + subject.hours, 0);
-};
 </script>
 
 <style scoped>
