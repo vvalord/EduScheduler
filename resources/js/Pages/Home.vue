@@ -1,6 +1,6 @@
 <template>
     <div style="max-width: 100%; margin: 1rem">
-        <el-table :data="profesores" max-height="800" border>
+        <el-table :data="profesores" max-height="700" border>
             <el-table-column prop="nombre" label="Nombre" width="90"/>
             <el-table-column label="Asignaturas">
                 <template #default="scope">
